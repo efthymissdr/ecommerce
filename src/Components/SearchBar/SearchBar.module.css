@@ -1,0 +1,16 @@
+.searchbar {
+  background: white;
+  border: 10px;
+  border-width: 10px;
+  border-radius: 5px;
+  border-style: solid;
+  border-color: blueviolet;
+}
+
+.searchbar i {
+  color: blue;
+}
+
+.input {
+  background: purple;
+}
