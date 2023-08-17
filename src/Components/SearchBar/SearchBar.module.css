@@ -1,16 +1,18 @@
 .searchbar {
-  background: white;
-  border: 10px;
-  border-width: 10px;
-  border-radius: 5px;
-  border-style: solid;
-  border-color: blueviolet;
+  margin-top: 10px;
 }
 
 .searchbar i {
-  color: blue;
+  color: lightgrey;
+  height: 5px;
 }
 
 .input {
-  background: purple;
+  background: transparent;
+  width: 300px;
+  border-radius: 6px;
+  border-width: 2px;
+  padding-left: 35px;
+  margin-left: -20px;
+  height: 20px;
 }
