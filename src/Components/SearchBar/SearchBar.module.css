@@ -1,5 +1,8 @@
-.searchbar input {
+.searchbar {
   margin-top: 10px;
+}
+
+.searchbar input {
   background: transparent;
   width: 300px;
   border-radius: 6px;
