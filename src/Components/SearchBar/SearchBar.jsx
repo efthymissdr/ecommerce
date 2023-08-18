@@ -1,7 +1,6 @@
-import React from "react";
 import s from "./SearchBar.module.css";
 
-function SearchBar(props) {
+export default function SearchBar(props) {
   return (
     <div className={s.searchbar}>
       <i className="fa-solid fa-magnifying-glass" />
@@ -13,5 +12,3 @@ function SearchBar(props) {
     </div>
   );
 }
-
-export default SearchBar;
