@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import FilterDropDown from "./Components/FilterDropDown/FilterDropDown";
+import FilterDropdown from "./components/FilterDropdown/FilterDropdown";
+import s from "./App.module.css";
 
 export default function App() {
   const onOptionChangeHandler = (event) => {
@@ -7,23 +7,23 @@ export default function App() {
   };
 
   return (
-    <div className="App">
-      <FilterDropDown
+    <div className={s.container}>
+      <FilterDropdown
         options={["Apple", "Samsung", "Xiaomi", "Huawei", "LG", "OnePlus"]}
         title="Manufacturer"
         onSelectOption={onOptionChangeHandler}
       />
-      <FilterDropDown
+      <FilterDropdown
         options={['Up to 5.4"', '5.5" - 5.9"', '6.0" - 6.4"', '6.5" and above']}
         title="Display"
         onSelectOption={onOptionChangeHandler}
       />
-      <FilterDropDown
+      <FilterDropdown
         options={["Up to 150€", "150 - 400€", "400 - 850€", "850€ and above"]}
         title="Price"
         onSelectOption={onOptionChangeHandler}
       />
-      <FilterDropDown
+      <FilterDropdown
         options={[
           "At least 64GB",
           "At least 128GB",
