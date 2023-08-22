@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import FilterDropDown from "./Components/FilterDropDown/FilterDropDown";
 
-function App() {
+export default function App() {
   const onOptionChangeHandler = (event) => {
     console.log("User Selected Value - ", event.target.value);
   };
+
   return (
     <div className="App">
       <FilterDropDown
@@ -35,5 +36,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

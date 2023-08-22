@@ -1,7 +1,6 @@
-import React from "react";
 import s from "./FilterDropDown.module.css";
 
-const filterdropdown = (props) => {
+export default function FilterDropDown(props) {
   return (
     <div className={s.filterdropdown}>
       <select onChange={props.onSelectOption}>
@@ -9,11 +8,9 @@ const filterdropdown = (props) => {
           {props.title}
         </option>
         {props.options.map((option, index) => {
-          return <option key={index}>{option}</option>;
+          return <option key={option}>{option}</option>;
         })}
       </select>
     </div>
   );
-};
-
-export default filterdropdown;
+}
