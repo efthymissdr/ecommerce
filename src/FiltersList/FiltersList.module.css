@@ -1,6 +1,4 @@
-.filterDropdown {
-  display: flex;
-  flex-direction: column;
+.FilterDropdown {
   appearance: none;
   width: 100%;
   height: 45px;
