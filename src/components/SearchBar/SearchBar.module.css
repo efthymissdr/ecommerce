@@ -1,0 +1,18 @@
+.searchbar {
+  margin-top: 10px;
+}
+
+.searchbar input {
+  background: transparent;
+  width: 300px;
+  border-radius: 6px;
+  border-width: 2px;
+  padding-left: 35px;
+  margin-left: -20px;
+  height: 25px;
+}
+
+.searchbar i {
+  color: lightgrey;
+  height: 5px;
+}
