@@ -1,5 +1,8 @@
-.FilterDropdown {
+.filterDropdown select {
+  display: flex;
+  flex-direction: column;
   appearance: none;
+  text-align: center;
   width: 100%;
   height: 45px;
   min-width: 15ch;
@@ -14,4 +17,8 @@
   line-height: 1.1;
   background-color: lightgray;
   font-size: small;
+}
+
+.filterDropdown title {
+  text-align: center;
 }
