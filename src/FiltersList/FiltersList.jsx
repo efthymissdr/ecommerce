@@ -1,5 +1,4 @@
 import React from "react";
-import s from "./FiltersList.module.css";
 import FilterDropdown from "../components/FilterDropdown/FilterDropdown";
 
 export default function App() {
@@ -7,7 +6,7 @@ export default function App() {
     console.log("User Selected Value - ", event.target.value);
   };
   return (
-    <div className={s.filterDropdown}>
+    <div>
       <FilterDropdown
         options={["Apple", "Samsung", "Xiaomi", "Huawei", "LG", "OnePlus"]}
         title="Manufacturer"
