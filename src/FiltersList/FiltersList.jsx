@@ -7,7 +7,7 @@ export default function App() {
     console.log("User Selected Value - ", event.target.value);
   };
   return (
-    <div className={s.FilterDropdown}>
+    <div className={s.filterDropdown}>
       <FilterDropdown
         options={["Apple", "Samsung", "Xiaomi", "Huawei", "LG", "OnePlus"]}
         title="Manufacturer"
