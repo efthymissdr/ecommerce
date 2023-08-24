@@ -1,14 +1,18 @@
 import s from "./App.module.css";
 import SearchBar from "./components/SearchBar/SearchBar";
 import FiltersList from "./FiltersList/FiltersList";
-import ProductCard from "./components/ProductCard/ProductCard";
+import ProductCardGrid from "./ProductCardGrid/ProductCardGrid";
 
 export default function App() {
   return (
     <>
-      <SearchBar />
-      <FiltersList />
-      <ProductCard />
+      <div className={s.searchbar}>
+        <SearchBar />
+      </div>
+      <div className={s.bigcontainer}>
+        <FiltersList />
+        <ProductCardGrid />
+      </div>
     </>
   );
 }

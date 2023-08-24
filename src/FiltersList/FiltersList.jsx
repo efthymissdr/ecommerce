@@ -1,4 +1,5 @@
 import FilterDropdown from "../components/FilterDropdown/FilterDropdown";
+import s from "./FiltersList.module.css";
 
 export default function FilterDropdown() {
   const onOptionChangeHandler = (event) => {
@@ -6,7 +7,7 @@ export default function FilterDropdown() {
   };
 
   return (
-    <div>
+    <div className={s.filterslist}>
       <FilterDropdown
         options={["Apple", "Samsung", "Xiaomi", "Huawei", "LG", "OnePlus"]}
         title="Manufacturer"
