@@ -4,15 +4,16 @@
 
 .searchbar input {
   background: transparent;
-  width: 300px;
-  border-radius: 6px;
-  border-width: 2px;
+  width: 450px;
+  border-radius: 10px;
+  border: 1px solid;
+  border-color: lightgrey;
   padding-left: 35px;
   margin-left: -20px;
-  height: 25px;
+  height: 40px;
 }
 
 .searchbar i {
-  color: lightgrey;
+  color: rgb(74, 73, 73);
   height: 5px;
 }
