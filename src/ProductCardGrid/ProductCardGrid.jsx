@@ -86,7 +86,7 @@ const products = [
 ];
 
 function handleClick() {
-  console.log("in cardClick");
+  console.log("You clicked card ");
 }
 
 export default function ProductCardGrid() {
