@@ -1,4 +1,3 @@
-import React from "react";
 import FilterDropdown from "../components/FilterDropdown/FilterDropdown";
 
 export default function App() {
