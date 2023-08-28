@@ -6,10 +6,10 @@ import ProductCardGrid from "./ProductCardGrid/ProductCardGrid";
 export default function App() {
   return (
     <>
-      <div className={s.searchbar}>
+      <div className={s.searchBar}>
         <SearchBar />
       </div>
-      <div className={s.bigcontainer}>
+      <div className={s.bigContainer}>
         <FiltersList />
         <ProductCardGrid />
       </div>

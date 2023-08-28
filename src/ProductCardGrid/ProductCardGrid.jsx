@@ -1,4 +1,3 @@
-import React from "react";
 import ProductCard from "../components/ProductCard/ProductCard";
 import s from "./ProductCardGrid.module.css";
 
@@ -93,7 +92,7 @@ export default function ProductCardGrid() {
   return (
     <div className={s.container} onClick={handleClick}>
       {products.map((product, index) => (
-        <ProductCard image={product.image} title={product.title} key={index} />
+        <ProductCard key={index} image={product.image} title={product.title} />
       ))}
     </div>
   );

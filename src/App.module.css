@@ -4,7 +4,7 @@
   gap: 16px;
 }
 
-.bigcontainer {
+.bigContainer {
   display: flex;
   flex-direction: row;
   gap: 40px;
@@ -14,7 +14,7 @@
   border-color: rgb(5, 92, 243);
 }
 
-.searchbar {
+.searchBar {
   text-align: center;
   margin-bottom: 20px;
 }

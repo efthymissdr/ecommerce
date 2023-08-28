@@ -19,9 +19,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: wrap;
+  font-size: smaller;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 400;
 }
 
-.productimage {
+.productImage {
   width: 8rem;
   height: 8rem;
   object-fit: contain;
