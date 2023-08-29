@@ -1,106 +1,25 @@
 import ProductCard from "../components/ProductCard/ProductCard";
 import s from "./ProductCardGrid.module.css";
 
-const products = [
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-  {
-    title: "Product Name",
-    image: "https://placehold.co/60x60",
-  },
-];
-
-function handleClick(index) {
-  console.log("You clicked card ", index);
+function handleClick(id) {
+  console.log("You clicked card ", id);
 }
-
-export default function ProductCardGrid() {
+const ProductCardGrid = (props) => {
+  const products = props.products;
   return (
     <div className={s.container}>
-      {products.map((product, index) => (
+      {products.map((product, id) => (
         <ProductCard
-          key={index}
+          key={id}
           image={product.image}
           title={product.title}
           onClick={() => {
-            handleClick(index);
+            handleClick(id);
           }}
         />
       ))}
     </div>
   );
-}
+};
+
+export default ProductCardGrid;

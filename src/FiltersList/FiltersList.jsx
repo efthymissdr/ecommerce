@@ -7,7 +7,7 @@ export default function FiltersList() {
   };
 
   return (
-    <div className={s.filterslist}>
+    <div className={s.filtersList}>
       <FilterDropdown
         options={["Apple", "Samsung", "Xiaomi", "Huawei", "LG", "OnePlus"]}
         title="Manufacturer"
