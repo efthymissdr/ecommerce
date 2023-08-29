@@ -10,6 +10,7 @@
   border-radius: 10px;
   border-color: rgb(190, 187, 187);
   flex: 1;
+  cursor: pointer;
 }
 
 .description {

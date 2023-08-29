@@ -84,15 +84,22 @@ const products = [
   },
 ];
 
-function handleClick() {
-  console.log("You clicked card ");
+function handleClick(index) {
+  console.log("You clicked card ", index);
 }
 
 export default function ProductCardGrid() {
   return (
-    <div className={s.container} onClick={handleClick}>
+    <div className={s.container}>
       {products.map((product, index) => (
-        <ProductCard key={index} image={product.image} title={product.title} />
+        <ProductCard
+          key={index}
+          image={product.image}
+          title={product.title}
+          onClick={() => {
+            handleClick(index);
+          }}
+        />
       ))}
     </div>
   );

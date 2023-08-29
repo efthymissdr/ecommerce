@@ -7,7 +7,7 @@ export default function FilterDropdown({ title, options, onSelectOption }) {
       defaultValue={title}
       onChange={onSelectOption}
     >
-      <option className={s.title} value={title} disabled hidden>
+      <option value={title} disabled hidden>
         {title}
       </option>
       {options.map((option) => (
