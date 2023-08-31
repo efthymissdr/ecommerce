@@ -1,21 +1,14 @@
-.container {
+.filtersProductsContainer {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.bigContainer {
-  display: flex;
-  flex-direction: row;
   gap: 40px;
-  margin-left: 20px;
-  margin-top: 30px;
-  border: 2px solid;
-  border-color: rgb(5, 92, 243);
 }
 
 .searchBarContainer {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+}
+
+.pageContainer {
+  padding: 40px;
 }

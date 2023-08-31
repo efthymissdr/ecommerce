@@ -1,4 +1,6 @@
 .filtersList {
-  width: 300px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 20%;
 }

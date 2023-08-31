@@ -109,14 +109,14 @@ export default function App() {
   ]);
 
   return (
-    <>
+    <div className={s.pageContainer}>
       <div className={s.searchBarContainer}>
         <SearchBar />
       </div>
-      <div className={s.bigContainer}>
+      <div className={s.filtersProductsContainer}>
         <FiltersList />
         <ProductCardGrid products={products} />
       </div>
-    </>
+    </div>
   );
 }
