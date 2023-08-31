@@ -3,30 +3,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 0.5rem;
-  gap: 1rem;
-  background-color: rgba(236, 232, 232, 0.912);
-  border: 1px solid;
-  border-radius: 10px;
-  border-color: rgb(190, 187, 187);
-  flex: 1;
+  padding: 8px;
+  gap: 16px;
+  background-color: #ece8e8;
+  border: 1px solid #bebbbb;
+  border-radius: 8px;
   cursor: pointer;
 }
 
 .description {
-  position: relative;
-  height: 1rem;
-  display: inline-block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: wrap;
-  font-size: smaller;
+  font-size: 14px;
   font-weight: 400;
 }
 
 .productImage {
-  width: 8rem;
-  height: 8rem;
   object-fit: contain;
-  margin: 7px;
 }
