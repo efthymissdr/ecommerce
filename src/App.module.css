@@ -14,7 +14,8 @@
   border-color: rgb(5, 92, 243);
 }
 
-.searchBar {
-  text-align: center;
+.searchBarContainer {
+  display: flex;
+  justify-content: center;
   margin-bottom: 20px;
 }
