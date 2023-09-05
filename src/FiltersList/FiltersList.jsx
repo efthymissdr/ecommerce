@@ -2,8 +2,8 @@ import FilterDropdown from "../components/FilterDropdown/FilterDropdown";
 import s from "./FiltersList.module.css";
 
 export default function FiltersList() {
-  const onOptionChangeHandler = (event) => {
-    console.log("User Selected Value - ", event.target.value);
+  const onOptionChangeHandler = (option) => {
+    console.log("User Selected Value - ", option);
   };
 
   return (
