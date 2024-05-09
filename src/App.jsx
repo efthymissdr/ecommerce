@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { createContext, useContext } from "react";
 import s from "./App.module.css";
 import SearchBar from "./components/SearchBar/SearchBar";
 import FiltersList from "./FiltersList/FiltersList";
 import ProductCardGrid from "./ProductCardGrid/ProductCardGrid";
+
+export const ProductsContext = createContext();
 
 export default function App() {
   const [products, setProducts] = useState([
@@ -109,14 +112,18 @@ export default function App() {
   ]);
 
   return (
-    <div className={s.pageContainer}>
-      <div className={s.searchBarContainer}>
-        <SearchBar />
+    <ProductsContext.Provider
+      value={{ products: products, setProducts: setProducts }}
+    >
+      <div className={s.pageContainer}>
+        <div className={s.searchBarContainer}>
+          <SearchBar />
+        </div>
+        <div className={s.filtersProductsContainer}>
+          <FiltersList />
+          <ProductCardGrid />
+        </div>
       </div>
-      <div className={s.filtersProductsContainer}>
-        <FiltersList />
-        <ProductCardGrid products={products} />
-      </div>
-    </div>
+    </ProductsContext.Provider>
   );
 }
