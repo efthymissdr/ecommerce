@@ -13,7 +13,7 @@ export default function FiltersList() {
         title="Manufacturer"
         onSelectOption={onOptionChangeHandler}
       />
-      <FilterDropdown
+      {/* <FilterDropdown
         options={['Up to 5.4"', '5.5" - 5.9"', '6.0" - 6.4"', '6.5" and above']}
         title="Display"
         onSelectOption={onOptionChangeHandler}
@@ -32,7 +32,7 @@ export default function FiltersList() {
         ]}
         title="Storage"
         onSelectOption={onOptionChangeHandler}
-      />
+      /> */}
     </div>
   );
 }
