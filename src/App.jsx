@@ -1,129 +1,52 @@
-import { useState } from "react";
-import { createContext, useContext } from "react";
-import s from "./App.module.css";
-import SearchBar from "./components/SearchBar/SearchBar";
-import FiltersList from "./FiltersList/FiltersList";
-import ProductCardGrid from "./ProductCardGrid/ProductCardGrid";
-
-export const ProductsContext = createContext();
+import { useEffect, useState } from 'react'
+import Lenis from 'lenis'
+import { gsap, ScrollTrigger } from './lib/gsap'
+import Preloader from './components/Preloader'
+import Nav from './components/Nav'
+import Hero from './components/Hero'
+import Marquee from './components/Marquee'
+import Collections from './components/Collections'
+import Story from './components/Story'
+import Process from './components/Process'
+import Taste from './components/Taste'
+import Footer, { Wholesale } from './components/Footer'
 
 export default function App() {
-  const [products, setProducts] = useState([
-    {
-      id: "Number 1",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 2",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 3",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 4",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 5",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 6",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 7",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 8",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 9",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 10",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 11",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 12",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 13",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 14",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 15",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 16",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 17",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 18",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 19",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-    {
-      id: "Number 20",
-      title: "Product Name",
-      image: "https://placehold.co/60x60",
-    },
-  ]);
+  const [ready, setReady] = useState(false)
+  const [cart, setCart] = useState([])
+  const [bump, setBump] = useState(0)
+
+  // Smooth scrolling, driven by GSAP's ticker so ScrollTrigger stays in sync.
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const lenis = new Lenis({ duration: 1.15, anchors: true })
+    lenis.on('scroll', ScrollTrigger.update)
+    const raf = (t) => lenis.raf(t * 1000)
+    gsap.ticker.add(raf)
+    gsap.ticker.lagSmoothing(0)
+    return () => { gsap.ticker.remove(raf); lenis.destroy() }
+  }, [])
+
+  const add = (p) => {
+    setCart((c) => [...c, p.id])
+    setBump((b) => b + 1)
+  }
 
   return (
-    <ProductsContext.Provider
-      value={{ products: products, setProducts: setProducts }}
-    >
-      <div className={s.pageContainer}>
-        <div className={s.searchBarContainer}>
-          <SearchBar />
-        </div>
-        <div className={s.filtersProductsContainer}>
-          <FiltersList />
-          <ProductCardGrid />
-        </div>
-      </div>
-    </ProductsContext.Provider>
-  );
+    <div className="grain">
+      <a href="#shop" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[110] focus:rounded-full focus:bg-gold focus:px-4 focus:py-2 focus:text-espresso">Skip to shop</a>
+      <Preloader onDone={() => setReady(true)} />
+      <Nav cartCount={cart.length} bump={bump} />
+      <main>
+        <Hero ready={ready} />
+        <Marquee />
+        <Collections onAdd={add} />
+        <Story />
+        <Process />
+        <Taste />
+        <Wholesale />
+      </main>
+      <Footer />
+    </div>
+  )
 }
