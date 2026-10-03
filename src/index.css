@@ -2,6 +2,10 @@
 @import "@fontsource-variable/cormorant";
 @import "@fontsource-variable/cormorant/wght-italic.css";
 @import "@fontsource-variable/montserrat";
+/* Greek fallbacks: Cormorant and Montserrat have no Greek glyphs */
+@import "@fontsource-variable/eb-garamond";
+@import "@fontsource-variable/eb-garamond/wght-italic.css";
+@import "@fontsource-variable/manrope";
 
 /* Design tokens — from ui-ux-pro-max: premium dark + gold accent, Cormorant / Montserrat */
 @theme {
@@ -16,8 +20,8 @@
   --color-crema: #d9b77a;
   --color-muted: #a8a29e;
 
-  --font-display: "Cormorant Variable", "Cormorant", Georgia, serif;
-  --font-sans: "Montserrat Variable", "Montserrat", system-ui, sans-serif;
+  --font-display: "Cormorant Variable", "EB Garamond Variable", Georgia, serif;
+  --font-sans: "Montserrat Variable", "Manrope Variable", system-ui, sans-serif;
 
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }

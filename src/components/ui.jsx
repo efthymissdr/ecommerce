@@ -40,20 +40,20 @@ export function Magnetic({ children, strength = 0.35, className = '' }) {
   return <div ref={ref} className={`inline-block ${className}`}>{children}</div>
 }
 
-export function Button({ children, href = '#', variant = 'gold', className = '', ...rest }) {
+export function Button({ children, href = '#', variant = 'gold', className = '', as: Tag = 'a', ...rest }) {
   const styles = {
     gold: 'bg-gold text-espresso hover:bg-crema',
     ghost: 'border border-cream/25 text-cream hover:border-gold hover:text-gold',
     dark: 'bg-espresso text-cream hover:bg-roast',
   }
   return (
-    <a
-      href={href}
+    <Tag
+      {...(Tag === 'a' ? { href } : { type: 'button' })}
       className={`group relative inline-flex min-h-12 items-center gap-3 overflow-hidden rounded-full px-7 py-3 text-sm font-semibold tracking-wide transition-colors duration-300 ${styles[variant]} ${className}`}
       {...rest}
     >
       {children}
-    </a>
+    </Tag>
   )
 }
 
@@ -64,4 +64,21 @@ export function Eyebrow({ children, className = '' }) {
       {children}
     </p>
   )
+}
+
+// Fly a gold dot from an element to the cart icon.
+export function flyToCart(fromEl) {
+  const from = fromEl.getBoundingClientRect()
+  const to = document.querySelector('.cart-btn')?.getBoundingClientRect()
+  if (!to || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  const dot = document.createElement('span')
+  dot.className = 'fixed z-[70] size-4 rounded-full bg-gold pointer-events-none'
+  Object.assign(dot.style, { left: `${from.left + from.width / 2 - 8}px`, top: `${from.top + from.height / 2 - 8}px` })
+  document.body.appendChild(dot)
+  const dx = to.left + to.width / 2 - (from.left + from.width / 2)
+  const dy = to.top + to.height / 2 - (from.top + from.height / 2)
+  gsap.timeline({ onComplete: () => dot.remove() })
+    .to(dot, { x: dx, duration: 0.8, ease: 'power1.inOut' })
+    .to(dot, { y: dy, duration: 0.8, ease: 'back.in(1.4)' }, 0)
+    .to(dot, { scale: 0.4, duration: 0.8 }, 0)
 }
