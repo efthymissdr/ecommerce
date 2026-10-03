@@ -79,10 +79,10 @@ export default function App() {
         <main>
           <Hero ready={ready} />
           <Marquee />
+          <Quiz quiz={quiz} setQuiz={setQuiz} onAdd={add} />
           <Collections onAdd={add} />
           <Story />
           <Process />
-          <Quiz quiz={quiz} setQuiz={setQuiz} onAdd={add} />
           <Wholesale />
         </main>
         <Footer />

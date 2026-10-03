@@ -82,3 +82,35 @@ export function flyToCart(fromEl) {
     .to(dot, { y: dy, duration: 0.8, ease: 'back.in(1.4)' }, 0)
     .to(dot, { scale: 0.4, duration: 0.8 }, 0)
 }
+
+// Full-bleed background photo with a tint overlay and a slow scroll parallax.
+// The parent section needs `relative isolate`; content after it needs `relative`.
+export function PhotoBg({ name, widths, overlay, position = 'center', blur = 0, eager = false }) {
+  const ref = useRef(null)
+  useGSAP(() => {
+    const mm = gsap.matchMedia()
+    mm.add(FULL, () => {
+      gsap.fromTo(ref.current.querySelector('img'), { yPercent: -6 }, {
+        yPercent: 6, ease: 'none',
+        scrollTrigger: { trigger: ref.current, start: 'top bottom', end: 'bottom top', scrub: true },
+      })
+    })
+  }, { scope: ref })
+  const largest = widths[widths.length - 1]
+  return (
+    <div ref={ref} className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+      <img
+        src={`/img/${name}-${largest}.webp`}
+        srcSet={widths.map((w) => `/img/${name}-${w}.webp ${w}w`).join(', ')}
+        sizes="100vw"
+        alt=""
+        loading={eager ? 'eager' : 'lazy'}
+        fetchPriority={eager ? 'high' : 'auto'}
+        decoding="async"
+        className="absolute inset-x-0 -top-[8%] h-[116%] w-full scale-105 object-cover"
+        style={{ objectPosition: position, filter: blur ? `blur(${blur}px)` : undefined }}
+      />
+      <div className="absolute inset-0" style={{ background: overlay }} />
+    </div>
+  )
+}

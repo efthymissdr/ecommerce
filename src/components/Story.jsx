@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { gsap, useGSAP, FULL } from '../lib/gsap'
 import { useLang } from '../i18n'
-import { Eyebrow } from './ui'
+import { Eyebrow, PhotoBg } from './ui'
 import { Leaf, Flame, Award } from './Art'
 
 const pillarIcons = [Leaf, Flame, Award]
@@ -44,7 +44,14 @@ export default function Story() {
   }, { scope: root })
 
   return (
-    <section id="story" ref={root} className="relative mx-auto max-w-7xl px-5 py-28 md:px-8 md:py-40">
+    <section id="story" ref={root} className="relative isolate">
+      <PhotoBg
+        name="sacks"
+        widths={[900]}
+        blur={1.5}
+        overlay="linear-gradient(180deg, rgba(23,17,12,.92) 0%, rgba(30,23,17,.78) 35%, rgba(30,23,17,.8) 70%, rgba(23,17,12,.95) 100%)"
+      />
+      <div className="relative mx-auto max-w-7xl px-5 py-28 md:px-8 md:py-40">
       <div className="grid gap-16 lg:grid-cols-[1fr_1.4fr]">
         <div className="lg:sticky lg:top-32 lg:self-start">
           <Eyebrow>{t.story.eyebrow}</Eyebrow>
@@ -89,6 +96,7 @@ export default function Story() {
             <p className="relative mt-2 text-sm leading-relaxed text-cream/60">{body}</p>
           </div>
         ))}
+      </div>
       </div>
     </section>
   )

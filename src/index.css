@@ -9,8 +9,8 @@
 
 /* Design tokens — from ui-ux-pro-max: premium dark + gold accent, Cormorant / Montserrat */
 @theme {
-  --color-espresso: #0f0b08;
-  --color-roast: #1c1917;
+  --color-espresso: #17110c;
+  --color-roast: #241b14;
   --color-bark: #292524;
   --color-stone: #44403c;
   --color-cream: #f5efe6;

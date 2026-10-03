@@ -1,9 +1,11 @@
 import { useRef, useState } from 'react'
 import { gsap, useGSAP, ScrollTrigger } from '../lib/gsap'
 import { useLang, languages } from '../i18n'
-import { Bag2, Menu, Close } from './Art'
+import { Bag2, Menu, Close, User } from './Art'
+import { shopify } from '../config'
 
-const linkIds = [['#shop', 'shop'], ['#story', 'story'], ['#craft', 'craft'], ['#quiz', 'quiz'], ['#wholesale', 'wholesale']]
+// Same order as the sections on the page.
+export const linkIds = [['#quiz', 'quiz'], ['#shop', 'shop'], ['#story', 'story'], ['#craft', 'craft'], ['#wholesale', 'wholesale']]
 
 function LangSwitch({ onChange }) {
   const { lang, t } = useLang()
@@ -33,7 +35,7 @@ function LangSwitch({ onChange }) {
             aria-label={l.name}
             aria-pressed={active}
             onClick={() => onChange(l.id)}
-            className={`relative z-10 grid h-9 min-w-11 place-items-center rounded-full px-3 text-xs font-bold tracking-[0.14em] transition-colors duration-300 ${active ? 'text-espresso' : 'text-cream/70 hover:text-cream'}`}
+            className={`relative z-10 grid h-9 min-w-10 place-items-center rounded-full px-2 text-xs md:min-w-11 md:px-3 font-bold tracking-[0.14em] transition-colors duration-300 ${active ? 'text-espresso' : 'text-cream/70 hover:text-cream'}`}
           >
             {l.short}
           </button>
@@ -76,7 +78,7 @@ export default function Nav({ cartCount, bump, onLang }) {
   return (
     <header ref={root} className="group fixed inset-x-0 top-0 z-50 px-4 pt-4 md:px-8">
       <nav className="glass mx-auto flex max-w-7xl items-center justify-between gap-3 rounded-full py-2.5 pl-5 pr-2.5 transition-[padding] duration-500 md:pl-7 group-data-[scrolled=true]:py-1.5" aria-label={t.nav.main}>
-        <a href="#top" className="font-display text-2xl font-semibold tracking-[0.25em] text-cream" aria-label={t.nav.home}>
+        <a href="#top" className="font-display text-xl font-semibold tracking-[0.18em] text-cream md:text-2xl md:tracking-[0.25em]" aria-label={t.nav.home}>
           FUERTE
         </a>
         <ul className="hidden items-center gap-7 xl:flex">
@@ -89,14 +91,24 @@ export default function Nav({ cartCount, bump, onLang }) {
             </li>
           ))}
         </ul>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 md:gap-1.5">
           <LangSwitch onChange={onLang} />
-          <a href="#shop" className="cart-btn relative grid size-11 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10" aria-label={t.nav.cart(cartCount)}>
+          <a
+            href={shopify.accountUrl}
+            className="account-btn group/acc relative grid size-10 md:size-11 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10"
+            aria-label={t.nav.account}
+          >
+            <User className="size-5 transition-transform duration-300 group-hover/acc:scale-110" />
+            <span className="pointer-events-none absolute top-full mt-2 hidden translate-y-1 whitespace-nowrap rounded-full bg-cream px-3 py-1 text-xs font-semibold text-espresso opacity-0 transition-all duration-300 group-hover/acc:translate-y-0 group-hover/acc:opacity-100 md:block" aria-hidden="true">
+              {t.nav.account}
+            </span>
+          </a>
+          <a href="#shop" className="cart-btn relative grid size-10 md:size-11 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10" aria-label={t.nav.cart(cartCount)}>
             <Bag2 />
             <span className="cart-badge absolute right-1 top-1 grid size-4.5 place-items-center rounded-full bg-gold text-[10px] font-bold text-espresso">{cartCount}</span>
           </a>
           <button
-            className="grid size-11 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10 xl:hidden"
+            className="grid size-10 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10 md:size-11 xl:hidden"
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-controls="mobile-menu"

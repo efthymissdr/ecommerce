@@ -3,6 +3,7 @@ import { gsap, useGSAP, FULL } from '../lib/gsap'
 import { ArrowUpRight, ArrowRight, Instagram, Facebook, Mail, Truck, Cup } from './Art'
 import { Magnetic, Button, Eyebrow } from './ui'
 import { useLang } from '../i18n'
+import { linkIds } from './Nav'
 
 export function Wholesale() {
   const { t } = useLang()
@@ -88,7 +89,7 @@ export default function Footer() {
         <nav aria-label={f.footerNav}>
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">{f.explore}</p>
           <ul className="mt-5 space-y-3">
-            {[['#shop', 'shop'], ['#story', 'story'], ['#craft', 'craft'], ['#quiz', 'quiz'], ['#wholesale', 'wholesale']].map(([h, id]) => (
+            {linkIds.map(([h, id]) => (
               <li key={h}><a href={h} className="text-cream/80 transition-colors hover:text-gold">{t.nav.links[id]}</a></li>
             ))}
           </ul>

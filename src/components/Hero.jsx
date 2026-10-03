@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { gsap, useGSAP, FULL } from '../lib/gsap'
 import { Bag, Bean, Cup, ArrowRight } from './Art'
-import { SplitWords, Magnetic, Button } from './ui'
+import { SplitWords, Magnetic, Button, PhotoBg } from './ui'
 import { localizedProducts } from '../data/content'
 import { useLang } from '../i18n'
 
@@ -61,7 +61,14 @@ export default function Hero({ ready }) {
   }, { scope: root, dependencies: [ready] })
 
   return (
-    <section id="top" ref={root} className="relative flex min-h-svh items-center overflow-hidden pt-28 pb-16">
+    <section id="top" ref={root} className="relative isolate flex min-h-svh items-center overflow-hidden pt-28 pb-16">
+      <PhotoBg
+        name="beans"
+        widths={[960, 1920]}
+        eager
+        position="center 40%"
+        overlay="linear-gradient(90deg, rgba(23,17,12,.9) 0%, rgba(23,17,12,.72) 45%, rgba(23,17,12,.45) 100%), linear-gradient(180deg, rgba(23,17,12,.35) 0%, transparent 30%, transparent 75%, rgba(23,17,12,.9) 100%)"
+      />
       <div className="hero-glow pointer-events-none absolute -top-40 left-1/2 h-[80vh] w-[80vw] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(200,161,90,.28),transparent)] blur-2xl" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(245,239,230,.04)_1px,transparent_1px)] bg-[size:12.5%_100%]" />
 

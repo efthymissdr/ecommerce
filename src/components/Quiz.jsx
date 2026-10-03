@@ -4,7 +4,7 @@ import { useLang } from '../i18n'
 import { axes, localizedProducts } from '../data/content'
 import { questions, recommend } from '../data/quiz'
 import { Bag, Bean, ArrowRight } from './Art'
-import { Eyebrow, Magnetic, Button, SplitWords, flyToCart } from './ui'
+import { Eyebrow, Magnetic, Button, SplitWords, flyToCart, PhotoBg } from './ui'
 
 /* ---------- option icons ---------- */
 
@@ -211,7 +211,14 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
   const brewOpt = answers[0] && q.questions.brew.o[answers[0]]
 
   return (
-    <section id="quiz" ref={root} className="relative mx-auto max-w-7xl scroll-mt-24 px-5 py-28 md:px-8 md:py-36">
+    <section id="quiz" ref={root} className="relative isolate scroll-mt-24">
+      <PhotoBg
+        name="cups"
+        widths={[900]}
+        blur={2}
+        overlay="linear-gradient(180deg, rgba(23,17,12,.88) 0%, rgba(36,27,20,.62) 45%, rgba(23,17,12,.9) 100%)"
+      />
+      <div className="relative mx-auto max-w-7xl px-5 py-28 md:px-8 md:py-36">
       <div className="qz-head max-w-2xl">
         <Eyebrow>{q.eyebrow}</Eyebrow>
         <h2 className="mt-6 font-display text-[clamp(3rem,6vw,5.5rem)] leading-[0.92] text-cream">
@@ -219,7 +226,7 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
         </h2>
       </div>
 
-      <div className="qz-panel relative mt-14 overflow-clip rounded-[2.5rem] border border-cream/10 bg-roast/70 p-6 md:p-12">
+      <div className="qz-panel relative mt-14 overflow-clip rounded-[2.5rem] border border-cream/15 bg-roast/75 p-6 shadow-[0_40px_80px_-30px_rgba(0,0,0,.6)] backdrop-blur-md md:p-12">
         <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-gold/10 blur-3xl" />
         <div className="qz-stage relative" aria-live="polite">
           {view === 'intro' && (
@@ -389,6 +396,7 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
             </div>
           )}
         </div>
+      </div>
       </div>
     </section>
   )

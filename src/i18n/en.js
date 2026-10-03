@@ -9,6 +9,7 @@ export default {
     main: 'Main',
     links: { shop: 'Shop', story: 'Our story', craft: 'The craft', quiz: 'Taste quiz', wholesale: 'Wholesale' },
     cart: (n) => `Cart, ${n} items`,
+    account: 'My account',
     open: 'Open menu',
     close: 'Close menu',
     skip: 'Skip to shop',
