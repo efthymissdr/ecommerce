@@ -48,7 +48,7 @@ export function Button({ children, href = '#', variant = 'gold', className = '',
   }
   return (
     <Tag
-      {...(Tag === 'a' ? { href } : { type: 'button' })}
+      {...(Tag === 'a' ? { href } : Tag === 'button' ? { type: 'button' } : {})}
       className={`group relative inline-flex min-h-12 items-center gap-3 overflow-hidden rounded-full px-7 py-3 text-sm font-semibold tracking-wide transition-colors duration-300 ${styles[variant]} ${className}`}
       {...rest}
     >

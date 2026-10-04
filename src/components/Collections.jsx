@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Link } from 'react-router'
 import { gsap, useGSAP, Flip, FULL } from '../lib/gsap'
 import { categoryIds, localizedProducts } from '../data/content'
 import { useLang } from '../i18n'
@@ -49,18 +50,19 @@ function ProductCard({ p, onAdd }) {
       className="pc group relative flex flex-col overflow-hidden rounded-[2rem] border border-espresso/10 bg-white/70 p-5 shadow-[0_1px_0_rgba(0,0,0,.04)] [transform-style:preserve-3d] [perspective:900px]"
     >
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-[radial-gradient(400px_circle_at_var(--mx,50%)_var(--my,50%),rgba(200,161,90,.22),transparent_60%)]" />
-      <div className="relative grid aspect-[4/4.2] place-items-center overflow-hidden rounded-3xl" style={{ background: `radial-gradient(circle at 50% 60%, ${p.bag}33, transparent 70%), #efe7da` }}>
+      {/* Image duplicates the title link, so it is hidden from keyboard and screen readers. */}
+      <Link to={`/products/${p.id}`} tabIndex={-1} aria-hidden="true" className="relative grid aspect-[4/4.2] place-items-center overflow-hidden rounded-3xl" style={{ background: `radial-gradient(circle at 50% 60%, ${p.bag}33, transparent 70%), #efe7da` }}>
         <span className="absolute left-4 top-4 rounded-full bg-espresso/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-cream">
           {t.shop.categories[p.category]}
         </span>
         <div className="pc-bag w-[58%] drop-shadow-[0_24px_24px_rgba(15,11,8,.35)]">
           <Bag product={p} />
         </div>
-      </div>
+      </Link>
       <div className="relative flex flex-1 flex-col px-1 pt-5">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-deep">{p.kicker}</p>
         <div className="mt-1 flex items-baseline justify-between gap-4">
-          <h3 className="font-display text-3xl font-semibold text-espresso">{p.name}</h3>
+          <h3 className="font-display text-3xl font-semibold text-espresso"><Link to={`/products/${p.id}`} className="transition-colors hover:text-gold-deep">{p.name}</Link></h3>
           <p className="font-sans text-lg font-semibold tabular-nums text-espresso">€{p.price.toFixed(2)}</p>
         </div>
         <ul className="mt-3 flex flex-wrap gap-1.5">

@@ -16,7 +16,20 @@ Direction comes from the `ui-ux-pro-max` skill (`.claude/skills/ui-ux-pro-max`):
 
 Hero → marquee → taste quiz → shop → our story → the craft → wholesale → footer. The navigation and footer links follow the same order (`linkIds` in `src/components/Nav.jsx`).
 
+## Product pages
+
+Each coffee has a page at `/products/<id>` (for example `/products/classico`). The shop cards and the quiz result link to it. From top to bottom:
+
+1. **Buy area.** The floating product image stays in view on the left, with views for the bag, beans and cup. On the right are size, roasted or green (unroasted), grind and quantity, plus Add to cart. The price updates with the options. Green coffee is whole-bean only, and Greek coffee comes ground for the briki. On phones, a sticky add-to-cart bar appears once the main button scrolls away.
+2. **Story.** Each product's own story (`products.<id>.story` in `src/i18n/*.js`).
+3. **Characteristics.** Origin, region, process, variety, altitude, roast level, tasting notes, best brewing methods and the taste-profile chart.
+4. **Photo carousel.** Drag or swipe, arrows, dots, keyboard arrows, and autoplay that pauses on hover or focus and when off screen.
+
+Sizes, prices, grinds and brewing methods are set up in `productOptions` and `priceFor` in `src/data/content.js`. They are placeholders until Shopify variants replace them. The site is a single-page app, so the host must serve `index.html` for every path (on Netlify, `/* /index.html 200`; on Vercel, a rewrite to `/index.html`).
+
 ## Shopify
+
+Cart lines already store the chosen variant (`{ id, size, roast, grind, qty }` in `src/App.jsx`), ready to map onto a Storefront API cart.
 
 The account button in the navigation links to `shopify.accountUrl` in `src/config.js`, which is currently `/account`. When the store is connected, set it to the store's customer account URL: `https://shopify.com/<shop-id>/account` for new customer accounts, or `https://<store-domain>/account` for classic ones.
 

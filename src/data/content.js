@@ -18,3 +18,37 @@ const catalogue = [
 export const localizedProducts = (t) => catalogue.map((p) => ({ ...p, ...t.products[p.id] }))
 
 export const axes = ['acidity', 'body', 'sweetness', 'bitterness']
+
+// ---------- product page options (placeholders until Shopify variants exist) ----------
+
+const sizeSets = {
+  250: [{ id: '250', label: '250g', mult: 1 }, { id: '500', label: '500g', mult: 1.9 }, { id: '1000', label: '1kg', mult: 3.6 }],
+  200: [{ id: '200', label: '200g', mult: 1 }, { id: '500', label: '500g', mult: 2.3 }, { id: '1000', label: '1kg', mult: 4.4 }],
+}
+const grindsAll = ['whole', 'espresso', 'moka', 'filter', 'press']
+const brewBy = {
+  classico: ['espresso', 'moka', 'press'],
+  intenso: ['espresso', 'moka'],
+  ethiopia: ['filter', 'press', 'espresso'],
+  colombia: ['filter', 'espresso', 'press'],
+  brazil: ['espresso', 'moka', 'press'],
+  greek: ['briki'],
+  filter: ['filter', 'press'],
+}
+
+export function productOptions(p) {
+  const greek = p.category === 'greek'
+  return {
+    sizes: sizeSets[parseInt(p.weight, 10)] || sizeSets[250],
+    // Green (unroasted) beans make no sense for a pre-ground Greek coffee.
+    roasts: greek ? ['roasted'] : ['roasted', 'green'],
+    grinds: greek ? ['briki'] : grindsAll,
+    brew: brewBy[p.id] || [],
+  }
+}
+
+// x.90 pricing: round to the euro, then knock off ten cents.
+export function priceFor(p, sizeMult, roast) {
+  const raw = p.price * sizeMult * (roast === 'green' ? 0.85 : 1)
+  return sizeMult === 1 && roast !== 'green' ? p.price : Math.max(1, Math.round(raw) - 0.1)
+}

@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Link } from 'react-router'
 import { gsap, useGSAP, FULL } from '../lib/gsap'
 import { useLang } from '../i18n'
 import { axes, localizedProducts } from '../data/content'
@@ -46,7 +47,7 @@ const C = 150
 const R = 104
 const zero = Object.fromEntries(axes.map((a) => [a, 0]))
 
-function points(profile) {
+export function points(profile) {
   return axes.map((a, i) => {
     const ang = (Math.PI * 2 * i) / axes.length - Math.PI / 2
     const r = (profile[a] / 5) * R
@@ -56,7 +57,7 @@ function points(profile) {
 
 // Polygons start collapsed in the markup; GSAP morphs them to their targets so
 // React never resets the animated attribute.
-function Radar({ product, user, labels, ariaLabel, className = '' }) {
+export function Radar({ product, user, labels, ariaLabel, className = '' }) {
   return (
     <svg viewBox="-50 -12 400 324" className={className} role="img" aria-label={ariaLabel}>
       {[1, 0.75, 0.5, 0.25].map((k) => (
@@ -356,9 +357,12 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
                       {added ? q.added : `${q.add} · €${shown.product.price.toFixed(2)}`}
                     </Button>
                   </Magnetic>
-                  <Button as="button" variant="ghost" onClick={() => go({ step: -1, answers: [], pick: null })}>
-                    {q.retake}
+                  <Button as={Link} to={`/products/${shown.product.id}`} variant="ghost">
+                    {t.pdp.view} <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </Button>
+                  <button onClick={() => go({ step: -1, answers: [], pick: null })} className="min-h-11 px-2 text-sm text-cream/60 underline-offset-4 transition-colors hover:text-gold hover:underline">
+                    {q.retake}
+                  </button>
                 </div>
               </div>
 

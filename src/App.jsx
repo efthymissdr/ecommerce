@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import Lenis from 'lenis'
+import { Routes, Route, useLocation } from 'react-router'
 import { gsap, ScrollTrigger } from './lib/gsap'
 import { useLang, languages } from './i18n'
 import Preloader from './components/Preloader'
@@ -12,6 +13,8 @@ import Story from './components/Story'
 import Process from './components/Process'
 import Quiz from './components/Quiz'
 import Footer, { Wholesale } from './components/Footer'
+// Loaded on demand so the home page bundle stays small.
+const ProductPage = lazy(() => import('./components/ProductPage'))
 
 export default function App() {
   const { lang, setLang, t } = useLang()
@@ -36,10 +39,44 @@ export default function App() {
     return () => { gsap.ticker.remove(raf); l.destroy(); lenis.current = null }
   }, [])
 
-  const add = (p) => {
-    setCart((c) => [...c, p.id])
+  // Re-measure scroll-driven animations whenever the page height changes
+  // (a lazily loaded route, fonts, a language switch), so triggers like the
+  // nav's hide/show keep covering the whole page.
+  useEffect(() => {
+    let timer
+    let last = document.body.scrollHeight
+    const ro = new ResizeObserver(() => {
+      const h = document.body.scrollHeight
+      if (Math.abs(h - last) < 2) return
+      last = h
+      clearTimeout(timer)
+      timer = setTimeout(() => { ScrollTrigger.refresh(); lenis.current?.resize() }, 150)
+    })
+    ro.observe(document.body)
+    return () => { ro.disconnect(); clearTimeout(timer) }
+  }, [])
+
+  // Cart lines carry the chosen variant; quick-adds from the grid use the defaults.
+  // TODO(shopify): replace with a Storefront API cart.
+  const add = (p, opts = {}) => {
+    setCart((c) => [...c, { id: p.id, qty: 1, ...opts }])
     setBump((b) => b + 1)
   }
+  const cartCount = cart.reduce((n, line) => n + line.qty, 0)
+
+  // On navigation: jump to the top, or to the #section in the URL once the
+  // new page has mounted, then re-measure scroll-driven animations.
+  const { pathname, hash } = useLocation()
+  useEffect(() => {
+    const to = (y) => (lenis.current ? lenis.current.scrollTo(y, { immediate: true, force: true }) : window.scrollTo(0, y))
+    to(0)
+    const id = setTimeout(() => {
+      ScrollTrigger.refresh()
+      const el = hash && document.querySelector(hash)
+      if (el) to(el.getBoundingClientRect().top + window.scrollY)
+    }, 120)
+    return () => clearTimeout(id)
+  }, [pathname, hash])
 
   // Swap language behind a curtain: the page content remounts in the new
   // language, scroll-driven animations are re-measured, and the scroll
@@ -74,17 +111,25 @@ export default function App() {
       <div ref={curtain} className="fixed inset-0 z-[95] hidden items-center justify-center bg-roast" aria-hidden="true">
         <span className="overflow-hidden"><span className="lc-label block font-display text-6xl italic text-gold md:text-8xl" /></span>
       </div>
-      <Nav cartCount={cart.length} bump={bump} onLang={switchLang} />
-      <div key={lang}>
-        <main>
-          <Hero ready={ready} />
-          <Marquee />
-          <Quiz quiz={quiz} setQuiz={setQuiz} onAdd={add} />
-          <Collections onAdd={add} />
-          <Story />
-          <Process />
-          <Wholesale />
-        </main>
+      <Nav cartCount={cartCount} bump={bump} onLang={switchLang} />
+      <div key={lang} className="overflow-x-clip">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <main>
+                <Hero ready={ready} />
+                <Marquee />
+                <Quiz quiz={quiz} setQuiz={setQuiz} onAdd={add} />
+                <Collections onAdd={add} />
+                <Story />
+                <Process />
+                <Wholesale />
+              </main>
+            }
+          />
+          <Route path="/products/:id" element={<Suspense fallback={<div className="min-h-svh" />}><ProductPage onAdd={add} /></Suspense>} />
+        </Routes>
         <Footer />
       </div>
     </div>

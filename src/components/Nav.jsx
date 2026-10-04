@@ -1,8 +1,15 @@
 import { useRef, useState } from 'react'
+import { Link, useLocation } from 'react-router'
 import { gsap, useGSAP, ScrollTrigger } from '../lib/gsap'
 import { useLang, languages } from '../i18n'
 import { Bag2, Menu, Close, User } from './Art'
 import { shopify } from '../config'
+
+// Links to a home-page section that also work from other pages.
+export function SectionLink({ hash, children, ...rest }) {
+  const { pathname } = useLocation()
+  return pathname === '/' ? <a href={hash} {...rest}>{children}</a> : <Link to={`/${hash}`} {...rest}>{children}</Link>
+}
 
 // Same order as the sections on the page.
 export const linkIds = [['#quiz', 'quiz'], ['#shop', 'shop'], ['#story', 'story'], ['#craft', 'craft'], ['#wholesale', 'wholesale']]
@@ -78,16 +85,16 @@ export default function Nav({ cartCount, bump, onLang }) {
   return (
     <header ref={root} className="group fixed inset-x-0 top-0 z-50 px-4 pt-4 md:px-8">
       <nav className="glass mx-auto flex max-w-7xl items-center justify-between gap-3 rounded-full py-2.5 pl-5 pr-2.5 transition-[padding] duration-500 md:pl-7 group-data-[scrolled=true]:py-1.5" aria-label={t.nav.main}>
-        <a href="#top" className="font-display text-xl font-semibold tracking-[0.18em] text-cream md:text-2xl md:tracking-[0.25em]" aria-label={t.nav.home}>
+        <SectionLink hash="#top" className="font-display text-xl font-semibold tracking-[0.18em] text-cream md:text-2xl md:tracking-[0.25em]" aria-label={t.nav.home}>
           FUERTE
-        </a>
+        </SectionLink>
         <ul className="hidden items-center gap-7 xl:flex">
           {linkIds.map(([href, id]) => (
             <li key={id}>
-              <a href={href} className="group/l relative whitespace-nowrap py-2 text-sm text-cream/80 transition-colors hover:text-cream">
+              <SectionLink hash={href} className="group/l relative whitespace-nowrap py-2 text-sm text-cream/80 transition-colors hover:text-cream">
                 {t.nav.links[id]}
                 <span className="absolute inset-x-0 -bottom-0.5 h-px origin-right scale-x-0 bg-gold transition-transform duration-500 ease-expo group-hover/l:origin-left group-hover/l:scale-x-100" />
-              </a>
+              </SectionLink>
             </li>
           ))}
         </ul>
@@ -103,10 +110,10 @@ export default function Nav({ cartCount, bump, onLang }) {
               {t.nav.account}
             </span>
           </a>
-          <a href="#shop" className="cart-btn relative grid size-10 md:size-11 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10" aria-label={t.nav.cart(cartCount)}>
+          <SectionLink hash="#shop" className="cart-btn relative grid size-10 md:size-11 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10" aria-label={t.nav.cart(cartCount)}>
             <Bag2 />
             <span className="cart-badge absolute right-1 top-1 grid size-4.5 place-items-center rounded-full bg-gold text-[10px] font-bold text-espresso">{cartCount}</span>
-          </a>
+          </SectionLink>
           <button
             className="grid size-10 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10 md:size-11 xl:hidden"
             onClick={() => setOpen((o) => !o)}
@@ -123,9 +130,9 @@ export default function Nav({ cartCount, bump, onLang }) {
           <ul className="flex flex-col gap-2">
             {linkIds.map(([href, id]) => (
               <li key={id} className="overflow-hidden">
-                <a href={href} onClick={() => setOpen(false)} className="m-link block py-2 font-display text-4xl text-cream">
+                <SectionLink hash={href} onClick={() => setOpen(false)} className="m-link block py-2 font-display text-4xl text-cream">
                   {t.nav.links[id]}
-                </a>
+                </SectionLink>
               </li>
             ))}
           </ul>
