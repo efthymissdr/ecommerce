@@ -1,19 +1,15 @@
 import { useRef } from 'react'
 import { gsap, useGSAP, FULL } from '../lib/gsap'
-import { milestones } from '../data/content'
-import { Eyebrow } from './ui'
+import { useLang } from '../i18n'
+import { Eyebrow, PhotoBg } from './ui'
 import { Leaf, Flame, Award } from './Art'
 
-const statement =
-  'We choose each origin for its aroma, flavour and body — then combine them in proportions that let every component shine. One blend, one roast profile, the same cup year after year.'
-
-const pillars = [
-  { icon: Leaf, title: '100% Arabica', body: 'Selected origins only. No fillers, no shortcuts.' },
-  { icon: Flame, title: 'Own roast profile', body: 'Every blend is roasted to a curve built for it alone.' },
-  { icon: Award, title: 'Certified single origins', body: 'Traceable coffees that taste of where they grew.' },
-]
+const pillarIcons = [Leaf, Flame, Award]
 
 export default function Story() {
+  const { t } = useLang()
+  const { statement, milestones } = t.story
+  const pillars = t.story.pillars.map((p, i) => ({ ...p, icon: pillarIcons[i] }))
   const root = useRef(null)
 
   useGSAP(() => {
@@ -48,15 +44,22 @@ export default function Story() {
   }, { scope: root })
 
   return (
-    <section id="story" ref={root} className="relative mx-auto max-w-7xl px-5 py-28 md:px-8 md:py-40">
+    <section id="story" ref={root} className="relative isolate">
+      <PhotoBg
+        name="sacks"
+        widths={[900]}
+        blur={1.5}
+        overlay="linear-gradient(180deg, rgba(23,17,12,.92) 0%, rgba(30,23,17,.78) 35%, rgba(30,23,17,.8) 70%, rgba(23,17,12,.95) 100%)"
+      />
+      <div className="relative mx-auto max-w-7xl px-5 py-28 md:px-8 md:py-40">
       <div className="grid gap-16 lg:grid-cols-[1fr_1.4fr]">
         <div className="lg:sticky lg:top-32 lg:self-start">
-          <Eyebrow>Our story</Eyebrow>
+          <Eyebrow>{t.story.eyebrow}</Eyebrow>
           <p className="mt-8 font-display text-[clamp(5rem,14vw,11rem)] leading-none text-gold [font-variant-numeric:lining-nums]">
             <span className="st-year tabular-nums">1997</span>
           </p>
           <p className="mt-14 max-w-sm text-cream/60">
-            Nearly three decades of roasting, trading and obsessing over coffee — from a small Greek roastery to a full specialty line.
+            {t.story.intro}
           </p>
         </div>
         <div>
@@ -93,6 +96,7 @@ export default function Story() {
             <p className="relative mt-2 text-sm leading-relaxed text-cream/60">{body}</p>
           </div>
         ))}
+      </div>
       </div>
     </section>
   )

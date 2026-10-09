@@ -1,11 +1,11 @@
 import { useRef } from 'react'
 import { gsap, useGSAP, FULL } from '../lib/gsap'
-import { steps } from '../data/content'
+import { useLang } from '../i18n'
 import { Bean } from './Art'
 import { Eyebrow } from './ui'
 
 // One illustration per step, drawn with simple shapes.
-function StepArt({ i }) {
+function StepArt({ i, labels }) {
   const common = 'absolute inset-0 m-auto'
   if (i === 0) return (
     <div className="relative size-full">
@@ -31,8 +31,8 @@ function StepArt({ i }) {
       {[40, 80, 120, 160].map((y) => <line key={y} x1="20" x2="290" y1={y} y2={y} stroke="#f5efe6" strokeOpacity=".08" />)}
       <path className="roast-curve" d="M20 170 C70 165 90 120 130 95 S210 45 290 38" fill="none" stroke="url(#curve)" strokeWidth="5" strokeLinecap="round" />
       <circle className="roast-dot" cx="290" cy="38" r="8" fill="#c8a15a" />
-      <text x="24" y="192" fill="#a8a29e" fontSize="10" fontFamily="Montserrat Variable">TIME →</text>
-      <text x="236" y="28" fill="#c8a15a" fontSize="10" fontFamily="Montserrat Variable">DROP</text>
+      <text x="24" y="192" fill="#a8a29e" fontSize="10" fontFamily="Montserrat Variable, Manrope Variable">{labels.time}</text>
+      <text x="236" y="28" fill="#c8a15a" fontSize="10" fontFamily="Montserrat Variable, Manrope Variable">{labels.drop}</text>
     </svg>
   )
   return (
@@ -46,6 +46,8 @@ function StepArt({ i }) {
 }
 
 export default function Process() {
+  const { t } = useLang()
+  const c = t.craft
   const root = useRef(null)
   const track = useRef(null)
 
@@ -100,25 +102,25 @@ export default function Process() {
       </div>
       <div ref={track} className="flex h-full flex-col lg:w-max lg:flex-row">
         <div className="flex shrink-0 flex-col justify-center px-5 pt-24 pb-10 md:px-8 lg:w-[42vw] lg:py-0 lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))]">
-          <Eyebrow>The craft</Eyebrow>
+          <Eyebrow>{c.eyebrow}</Eyebrow>
           <h2 className="mt-6 font-display text-[clamp(3rem,6vw,5.5rem)] leading-[0.92] text-cream">
-            Four steps.<br /><em className="text-gold">Zero shortcuts.</em>
+            {c.title}<br /><em className="text-gold">{c.titleEm}</em>
           </h2>
-          <p className="mt-6 max-w-sm text-cream/60">How a green bean becomes a FUERTE coffee — the same way, every single roast.</p>
+          <p className="mt-6 max-w-sm text-cream/60">{c.copy}</p>
           <p className="mt-10 hidden items-center gap-3 text-xs uppercase tracking-[0.3em] text-muted lg:flex">
-            Keep scrolling <span className="h-px w-16 bg-gold" />
+            {c.keep} <span className="h-px w-16 bg-gold" />
           </p>
         </div>
-        {steps.map((s, i) => (
-          <article key={s.n} className={`step step-${i} relative flex shrink-0 items-center px-5 py-10 md:px-8 lg:w-[62vw] lg:max-w-[900px] lg:py-0`}>
+        {c.steps.map((s, i) => (
+          <article key={i} className={`step step-${i} relative flex shrink-0 items-center px-5 py-10 md:px-8 lg:w-[62vw] lg:max-w-[900px] lg:py-0`}>
             <div className="relative grid w-full items-center gap-8 overflow-hidden rounded-[2.5rem] border border-cream/10 bg-roast p-8 md:grid-cols-2 md:p-12">
               <div className="relative z-10">
-                <p className="step-in text-xs font-semibold uppercase tracking-[0.3em] text-gold">Step {s.n}</p>
-                <h3 className="step-in mt-4 font-display text-5xl text-cream md:text-6xl">{s.title}</h3>
+                <p className="step-in text-xs font-semibold uppercase tracking-[0.3em] text-gold">{c.step} 0{i + 1}</p>
+                <h3 className="step-in mt-4 font-display text-4xl text-cream [hyphens:auto] md:text-5xl">{s.title}</h3>
                 <p className="step-in mt-5 max-w-sm leading-relaxed text-cream/65">{s.body}</p>
               </div>
-              <div className="step-in relative h-56 md:h-72"><StepArt i={i} /></div>
-              <span className="step-num pointer-events-none absolute -bottom-10 right-4 font-display text-[12rem] leading-none text-cream/[0.04]" aria-hidden="true">{s.n}</span>
+              <div className="step-in relative h-56 md:h-72"><StepArt i={i} labels={c} /></div>
+              <span className="step-num pointer-events-none absolute -bottom-10 right-4 font-display text-[12rem] leading-none text-cream/[0.04]" aria-hidden="true">0{i + 1}</span>
             </div>
           </article>
         ))}

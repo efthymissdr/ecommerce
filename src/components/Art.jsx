@@ -35,15 +35,15 @@ export function Bag({ product, className = '' }) {
       <circle cx="110" cy="72" r="7" fill="none" stroke={ink} strokeOpacity=".5" strokeWidth="1.5" />
       <circle cx="110" cy="72" r="2.5" fill={ink} fillOpacity=".5" />
       {/* label */}
-      <text x="110" y="120" textAnchor="middle" fill={ink} fontFamily="Montserrat Variable, sans-serif" fontSize="10" letterSpacing="5" fontWeight="600">FUERTE</text>
+      <text x="110" y="120" textAnchor="middle" fill={ink} fontFamily="Montserrat Variable, Manrope Variable, sans-serif" fontSize="10" letterSpacing="5" fontWeight="600">FUERTE</text>
       <line x1="70" x2="150" y1="132" y2="132" stroke={ink} strokeOpacity=".4" />
-      <text x="110" y="172" textAnchor="middle" fill={ink} fontFamily="Cormorant Variable, serif" fontSize="30" fontStyle="italic" fontWeight="600">{name}</text>
-      <text x="110" y="194" textAnchor="middle" fill={ink} fillOpacity=".75" fontFamily="Montserrat Variable, sans-serif" fontSize="7.5" letterSpacing="1.5">{kicker.toUpperCase()}</text>
+      <text x="110" y="172" textAnchor="middle" fill={ink} fontFamily="Cormorant Variable, EB Garamond Variable, serif" fontSize="30" fontStyle="italic" fontWeight="600">{name}</text>
+      <text x="110" y="194" textAnchor="middle" fill={ink} fillOpacity=".75" fontFamily="Montserrat Variable, Manrope Variable, sans-serif" fontSize="7.5" letterSpacing="1.5">{kicker.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase()}</text>
       {/* roast dots */}
       {Array.from({ length: 5 }).map((_, i) => (
         <circle key={i} cx={86 + i * 12} cy="222" r="3.4" fill={ink} fillOpacity={i < roast ? 0.9 : 0.2} />
       ))}
-      <text x="110" y="262" textAnchor="middle" fill={ink} fillOpacity=".6" fontFamily="Montserrat Variable, sans-serif" fontSize="8" letterSpacing="2">{weight} · 100% ARABICA</text>
+      <text x="110" y="262" textAnchor="middle" fill={ink} fillOpacity=".6" fontFamily="Montserrat Variable, Manrope Variable, sans-serif" fontSize="8" letterSpacing="2">{weight} · 100% ARABICA</text>
     </svg>
   )
 }
@@ -78,6 +78,7 @@ const icon = (d) =>
 
 export const ArrowRight = icon(<><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></>)
 export const ArrowUpRight = icon(<><path d="M7 17 17 7" /><path d="M8 7h9v9" /></>)
+export const User = icon(<><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></>)
 export const Bag2 = icon(<><path d="M6 7h12l1 13H5z" /><path d="M9 7a3 3 0 0 1 6 0" /></>)
 export const Plus = icon(<><path d="M12 5v14" /><path d="M5 12h14" /></>)
 export const Leaf = icon(<><path d="M11 20A7 7 0 0 1 4 13c0-6 7-9 16-9 0 9-3 16-9 16Z" /><path d="M4 21c4-4 7-7 11-10" /></>)
