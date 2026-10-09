@@ -6,6 +6,7 @@ import { gsap, ScrollTrigger } from './lib/gsap'
 import { useLang, languages } from './i18n'
 import Preloader from './components/Preloader'
 import Nav from './components/Nav'
+import ScrollProgress from './components/ScrollProgress'
 import Hero from './components/Hero'
 import Marquee from './components/Marquee'
 import Collections from './components/Collections'
@@ -111,6 +112,7 @@ export default function App() {
       <div ref={curtain} className="fixed inset-0 z-[95] hidden items-center justify-center bg-roast" aria-hidden="true">
         <span className="overflow-hidden"><span className="lc-label block font-display text-6xl italic text-gold md:text-8xl" /></span>
       </div>
+      <ScrollProgress />
       <Nav cartCount={cartCount} bump={bump} onLang={switchLang} />
       <div key={lang} className="overflow-x-clip">
         <Routes>
