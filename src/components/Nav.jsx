@@ -85,8 +85,8 @@ export default function Nav({ cartCount, bump, onLang }) {
   return (
     <header ref={root} className="group fixed inset-x-0 top-0 z-50 px-4 pt-4 md:px-8">
       <nav className="glass mx-auto flex max-w-7xl items-center justify-between gap-3 rounded-full py-2.5 pl-5 pr-2.5 transition-[padding] duration-500 md:pl-7 group-data-[scrolled=true]:py-1.5" aria-label={t.nav.main}>
-        <SectionLink hash="#top" className="font-display text-xl font-semibold tracking-[0.18em] text-cream md:text-2xl md:tracking-[0.25em]" aria-label={t.nav.home}>
-          FUERTE
+        <SectionLink hash="#top" className="shrink-0 transition-transform duration-300 hover:scale-[1.03]" aria-label={t.nav.home}>
+          <img src="/img/logo.webp" alt="FUERTE Coffee Roasters" width="458" height="160" className="h-8 w-auto md:h-10" />
         </SectionLink>
         <ul className="hidden items-center gap-7 xl:flex">
           {linkIds.map(([href, id]) => (

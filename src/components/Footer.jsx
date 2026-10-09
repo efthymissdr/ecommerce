@@ -69,7 +69,10 @@ export default function Footer() {
 
   return (
     <footer ref={root} className="relative overflow-hidden border-t border-cream/10 bg-espresso pt-24">
-      <div className="mx-auto grid max-w-7xl gap-14 px-5 md:px-8 lg:grid-cols-[1.3fr_1fr_1fr]">
+      <div className="mx-auto max-w-7xl px-5 md:px-8">
+        <img src="/img/logo.webp" alt="FUERTE Coffee Roasters" width="458" height="160" loading="lazy" className="h-16 w-auto md:h-20" />
+      </div>
+      <div className="mx-auto mt-14 grid max-w-7xl gap-14 px-5 md:px-8 lg:grid-cols-[1.3fr_1fr_1fr]">
         <div>
           <Eyebrow>{f.newsletter}</Eyebrow>
           <h3 className="mt-5 font-display text-4xl text-cream md:text-5xl">{f.title}</h3>
