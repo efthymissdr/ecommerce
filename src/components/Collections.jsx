@@ -97,36 +97,71 @@ export default function Collections({ onAdd }) {
   const s = t.shop
   const products = localizedProducts(t)
   const root = useRef(null)
+  // `tab` updates instantly (pill + aria state); `cat` drives the grid once leaving cards have faded out.
+  const [tab, setTab] = useState('all')
   const [cat, setCat] = useState('all')
-  const flipState = useRef(null)
+  const catRef = useRef('all')
+  const flip = useRef(null)
+  const exitTween = useRef(null)
   const visible = products.filter((p) => cat === 'all' || p.category === cat)
 
   const choose = (id) => {
-    if (id === cat) return
-    flipState.current = Flip.getState('.pc')
-    setCat(id)
+    if (id === tab) return
+    setTab(id)
+    const wrap = root.current.querySelector('.pc-wrap')
+    const commit = () => {
+      // Clicked away and back before the grid changed: just bring faded cards back.
+      if (catRef.current === id) {
+        gsap.to(gsap.utils.toArray('.pc', root.current), { autoAlpha: 1, scale: 1, duration: 0.3, ease: 'power2.out', clearProps: 'opacity,visibility,scale' })
+        return
+      }
+      catRef.current = id
+      // Record where every remaining card is and how tall the grid is, then re-render.
+      flip.current = { state: Flip.getState('.pc'), height: wrap.offsetHeight }
+      setCat(id)
+    }
+    exitTween.current?.kill()
+    const leaving = gsap.utils.toArray('.pc', root.current).filter((el) => {
+      const prod = products.find((p) => p.id === el.dataset.flipId)
+      return id !== 'all' && prod.category !== id
+    })
+    if (!leaving.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { commit(); return }
+    exitTween.current = gsap.to(leaving, { autoAlpha: 0, scale: 0.92, duration: 0.25, ease: 'power2.in', onComplete: commit })
   }
 
-  // Animate filter changes with FLIP: cards glide to new slots, newcomers scale in.
+  // Cards stay in normal layout the whole time (no absolute positioning), so the
+  // grid never collapses. The grid itself is never given a fixed height (that
+  // squeezes the cards); a wrapper around it eases from the old height to the
+  // new one while the cards keep their real size. Remaining cards glide to
+  // their new slots and newcomers fade in where they belong.
   useGSAP(() => {
-    if (!flipState.current) return
-    Flip.from(flipState.current, {
-      targets: '.pc',
+    const f = flip.current
+    if (!f) return
+    flip.current = null
+    const wrap = root.current.querySelector('.pc-wrap')
+    const grid = root.current.querySelector('.pc-grid')
+    const cards = gsap.utils.toArray('.pc', root.current)
+    gsap.set(cards, { clearProps: 'opacity,visibility,scale' })
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const to = grid.offsetHeight
+    if (to !== f.height) {
+      gsap.fromTo(wrap, { height: f.height, overflow: 'hidden' }, { height: to, duration: 0.7, ease: 'expo.inOut', clearProps: 'height,overflow' })
+    }
+    Flip.from(f.state, {
+      targets: cards,
+      scale: true, // move with transforms only; never touch width/height
       duration: 0.7,
       ease: 'expo.inOut',
-      absolute: true,
-      scale: true,
-      onEnter: (els) => gsap.fromTo(els, { autoAlpha: 0, scale: 0.85, y: 30 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.6, ease: 'back.out(1.6)' }),
-      onLeave: (els) => gsap.to(els, { autoAlpha: 0, scale: 0.85, duration: 0.4 }),
+      onEnter: (els) => gsap.fromTo(els, { autoAlpha: 0, y: 30, scale: 0.94 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.06, delay: 0.15, ease: 'power3.out', clearProps: 'transform,opacity,visibility' }),
     })
-    flipState.current = null
   }, { scope: root, dependencies: [cat] })
 
   // Pill indicator slides under the active tab.
   useGSAP(() => {
     const active = root.current.querySelector('[aria-selected="true"]')
     gsap.to('.tab-pill', { x: active.offsetLeft, width: active.offsetWidth, duration: 0.6, ease: 'expo.out' })
-  }, { scope: root, dependencies: [cat] })
+  }, { scope: root, dependencies: [tab] })
 
   useGSAP(() => {
     const mm = gsap.matchMedia()
@@ -161,9 +196,9 @@ export default function Collections({ onAdd }) {
               <button
                 key={id}
                 role="tab"
-                aria-selected={cat === id}
+                aria-selected={tab === id}
                 onClick={() => choose(id)}
-                className={`relative z-10 min-h-11 whitespace-nowrap rounded-full px-5 text-sm font-medium transition-colors duration-300 ${cat === id ? 'text-cream' : 'text-stone hover:text-espresso'}`}
+                className={`relative z-10 min-h-11 whitespace-nowrap rounded-full px-5 text-sm font-medium transition-colors duration-300 ${tab === id ? 'text-cream' : 'text-stone hover:text-espresso'}`}
               >
                 {s.categories[id]}
               </button>
@@ -171,8 +206,10 @@ export default function Collections({ onAdd }) {
           </div>
         </div>
 
-        <div className="pc-grid mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {visible.map((p) => <ProductCard key={p.id} p={p} onAdd={onAdd} />)}
+        <div className="pc-wrap mt-10">
+          <div className="pc-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {visible.map((p) => <ProductCard key={p.id} p={p} onAdd={onAdd} />)}
+          </div>
         </div>
       </div>
     </section>
