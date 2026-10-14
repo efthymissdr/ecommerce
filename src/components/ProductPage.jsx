@@ -19,7 +19,7 @@ const slideIds = [
 ]
 
 // Photo used beside each product's story.
-const storyPhoto = { espresso: 'cups', single: 'sacks', greek: 'cups', filter: 'cups' }
+const storyPhoto = { single: 'sacks', blend: 'cups' }
 
 const euro = (v) => `€${v.toFixed(2)}`
 
@@ -309,7 +309,8 @@ function Specs({ product, t }) {
     gsap.fromTo('.sp-roast span', { scaleY: 0 }, { scaleY: 1, transformOrigin: 'bottom', duration: 0.6, stagger: 0.08, ease: 'back.out(2)', scrollTrigger: { trigger: '.sp-roast', start: 'top 90%' } })
   }, { scope: ref, dependencies: [product.id] })
 
-  const facts = ['origin', 'region', 'process', 'variety', 'altitude']
+  // Only the facts this coffee has (origin always; estate/lot and grade when known).
+  const facts = ['origin', 'lot', 'grade'].filter((f) => product.facts[f])
   return (
     <section ref={ref} className="relative isolate">
       <PhotoBg name="beans" widths={[960]} blur={3} overlay="linear-gradient(180deg, rgba(23,17,12,.97), rgba(23,17,12,.86) 40%, rgba(23,17,12,.97))" />

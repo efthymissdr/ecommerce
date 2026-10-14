@@ -34,6 +34,22 @@ const icons = {
   explore: ico(<><circle cx="16" cy="16" r="11" /><path d="m20.5 11.5-3 6-6 3 3-6z" /></>),
 }
 
+// Icons for the current quiz answers, built from the drawings above.
+const drop = (fill) => ico(<><path d="M16 5c4 6 7 9.5 7 13a7 7 0 0 1-14 0c0-3.5 3-7 7-13z" />{fill}</>)
+Object.assign(icons, {
+  freddo: ico(<><path d="M9 7h14l-2 19H11z" /><path d="M12 13l3 2-1 3M19 12l-2 3 2 2" /><path d="M18 3l-2 9" /></>),
+  latte: icons.lots,
+  mild: icons.gentle,
+  strong: icons.intense,
+  acidLow: icons.low,
+  acidMed: icons.balanced,
+  acidHigh: icons.bright,
+  bodyFull: drop(<path d="M9 18c0 3.9 3.1 7 7 7s7-3.1 7-7z" fill="currentColor" stroke="none" />),
+  bodyMed: drop(<path d="M10 21c1 2.4 3.3 4 6 4s5-1.6 6-4z" fill="currentColor" stroke="none" />),
+  bodyLight: drop(null),
+})
+icons.balanced = icons.medium // intensity "balanced" uses the middle bar chart
+
 const Check = () => (
   <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10" /></svg>
 )
@@ -61,7 +77,7 @@ export function Radar({ product, user, labels, ariaLabel, className = '' }) {
   return (
     <svg viewBox="-50 -12 400 324" className={className} role="img" aria-label={ariaLabel}>
       {[1, 0.75, 0.5, 0.25].map((k) => (
-        <polygon key={k} className="rd-grid" points={points({ acidity: 5 * k, body: 5 * k, sweetness: 5 * k, bitterness: 5 * k })} fill="none" stroke="#f5efe6" strokeOpacity=".1" />
+        <polygon key={k} className="rd-grid" points={points(Object.fromEntries(axes.map((ax) => [ax, 5 * k])))} fill="none" stroke="#f5efe6" strokeOpacity=".1" />
       ))}
       {axes.map((a, i) => {
         const ang = (Math.PI * 2 * i) / axes.length - Math.PI / 2
@@ -300,7 +316,7 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
                       </span>
                       <span className="mt-auto">
                         <span className="block font-semibold text-cream">{label}</span>
-                        <span className="mt-1 block text-sm text-cream/55">{hint}</span>
+                        {hint && <span className="mt-1 block text-sm text-cream/55">{hint}</span>}
                       </span>
                       <span className={`absolute right-4 top-4 grid size-6 place-items-center rounded-full border transition-all duration-300 ${selected ? 'scale-100 border-gold bg-gold text-espresso' : 'scale-75 border-cream/20 text-transparent'}`}>
                         <Check />

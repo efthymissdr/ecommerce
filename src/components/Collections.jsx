@@ -62,7 +62,7 @@ function ProductCard({ p, onAdd }) {
       <div className="relative flex flex-1 flex-col px-1 pt-5">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-deep">{p.kicker}</p>
         <div className="mt-1 flex items-baseline justify-between gap-4">
-          <h3 className="font-display text-3xl font-semibold text-espresso"><Link to={`/products/${p.id}`} className="transition-colors hover:text-gold-deep">{p.name}</Link></h3>
+          <h3 className="font-display text-2xl font-semibold leading-tight text-espresso"><Link to={`/products/${p.id}`} className="transition-colors hover:text-gold-deep">{p.name}</Link></h3>
           <p className="font-sans text-lg font-semibold tabular-nums text-espresso">€{p.price.toFixed(2)}</p>
         </div>
         <ul className="mt-3 flex flex-wrap gap-1.5">

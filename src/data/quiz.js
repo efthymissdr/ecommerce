@@ -1,86 +1,96 @@
-import { axes } from './content.js'
+// FUERTE taste quiz: questions, answers and points per coffee, entered from the
+// FUERTE scoring sheet exactly as given. Each answer gives every coffee a number
+// of points. The recommendation is the coffee with the most points in total.
 
-// Each option nudges the taste profile (p, around a neutral 3) and/or adds
-// points to coffee categories (c). The recommendation is the product whose
-// profile is closest to the visitor's, plus a bonus for fitting how they brew.
+// Column order of the scoring sheet.
+const cols = ['colombia', 'costarica', 'brazil', 'green', 'ethiopia', 'honduras', 'rwanda', 'yellow', 'red']
+const pts = (...v) => Object.fromEntries(cols.map((id, i) => [id, v[i]]))
+
 export const questions = [
   {
-    id: 'brew',
+    id: 'brew', // 1. How do you usually drink your coffee?
     options: [
-      { id: 'espresso', c: { espresso: 2.2, single: 0.6 } },
-      { id: 'briki', c: { greek: 7 } },
-      { id: 'filter', c: { filter: 2.2, single: 1.6, espresso: -1.2 } },
-      { id: 'press', p: { body: 0.8 }, c: { single: 1.2, filter: 1 } },
+      { id: 'espresso', pts: pts(3, 1, 2, 4, 5, 4, 3, 3, 4) },
+      { id: 'freddo', pts: pts(1, 3, 3, 3, 3, 2, 3, 4, 3) },
+      { id: 'latte', pts: pts(0, 3, 4, 2, 5, 4, 4, 3, 2) },
+      { id: 'filter', pts: pts(-1, 2, 1, 1, 5, 4, 5, 1, 1) },
     ],
   },
   {
-    id: 'milk',
+    id: 'flavour', // 2. Which flavours do you prefer?
     options: [
-      { id: 'black', p: { acidity: 0.6 }, c: { single: 0.4 } },
-      { id: 'splash', p: {} },
-      { id: 'lots', p: { body: 1, bitterness: 0.8, acidity: -1 }, c: { espresso: 1.2 } },
+      { id: 'choc', pts: pts(4, 2, 5, 5, 1, 2, 0, 3, 4) },
+      { id: 'caramel', pts: pts(5, 2, 4, 2, 1, 2, 1, 3, 3) },
+      { id: 'fruit', pts: pts(2, 3, 2, 1, 5, 4, 3, 1, 0) },
     ],
   },
   {
-    id: 'flavour',
+    id: 'intensity', // 3. How intense do you like your coffee?
     options: [
-      { id: 'choc', p: { body: 1, sweetness: 0.6, acidity: -1 } },
-      { id: 'fruit', p: { acidity: 2, body: -1, bitterness: -1 }, c: { single: 1 } },
-      { id: 'caramel', p: { sweetness: 2, bitterness: -0.5 } },
-      { id: 'smoky', p: { bitterness: 2, body: 1, acidity: -1.2 } },
+      { id: 'mild', pts: pts(1, 3, 3, 1, 4, 4, 5, 2, 2) },
+      { id: 'balanced', pts: pts(2, 3, 4, 3, 2, 2, 3, 5, 4) },
+      { id: 'strong', pts: pts(5, 3, 3, 4, 5, 5, 2, 3, 5) },
     ],
   },
   {
-    id: 'acidity',
+    id: 'acidity', // 4. What acidity do you like?
     options: [
-      { id: 'bright', p: { acidity: 1.5 } },
-      { id: 'balanced', p: {} },
-      { id: 'low', p: { acidity: -1.5 } },
+      { id: 'acidLow', pts: pts(2, 4, 3, 3, 3, 3, 4, 3, 4) },
+      { id: 'acidMed', pts: pts(4, 3, 3, 3, 2, 2, 3, 2, 3) },
+      { id: 'acidHigh', pts: pts(3, 2, 1, 1, 5, 5, 4, 2, 2) },
     ],
   },
   {
-    id: 'strength',
+    id: 'body', // 5. What body do you prefer?
     options: [
-      { id: 'gentle', p: { body: -1, bitterness: -1 } },
-      { id: 'medium', p: {} },
-      { id: 'intense', p: { body: 1.5, bitterness: 1 } },
-    ],
-  },
-  {
-    id: 'adventure',
-    options: [
-      { id: 'classic', c: { espresso: 0.6, greek: 0.6, filter: 0.4 } },
-      { id: 'explore', c: { single: 1.8 } },
+      { id: 'bodyFull', pts: pts(5, 2, 3, 4, 3, 4, 1, 3, 5) },
+      { id: 'bodyMed', pts: pts(2, 4, 5, 2, 1, 1, 2, 5, 5) },
+      { id: 'bodyLight', pts: pts(2, 3, 3, 4, 5, 4, 5, 3, 3) },
     ],
   },
 ]
 
-const clamp = (v) => Math.min(5, Math.max(1, v))
+// Highest points a coffee can collect: 5 per question.
+export const MAX_POINTS = questions.length * 5
+
+// The visitor's taste on the same six axes as the coffees, used to draw the
+// "your taste" shape on the chart and to break ties in the points.
+const targets = {
+  intensity: { mild: { intensity: 1.5 }, balanced: { intensity: 3 }, strong: { intensity: 4.5 } },
+  acidity: { acidLow: { acidity: 1.5 }, acidMed: { acidity: 3 }, acidHigh: { acidity: 4.5 } },
+  body: { bodyFull: { body: 4.5 }, bodyMed: { body: 3 }, bodyLight: { body: 1.5 } },
+  flavour: {
+    choc: { chocolatey: 4.5, sweetness: 3.5, fruity: 1.5 },
+    caramel: { sweetness: 4.5, chocolatey: 3, fruity: 1.5 },
+    fruit: { fruity: 4.5, sweetness: 3.5, chocolatey: 1.5 },
+  },
+}
 
 export function tasteProfile(answers) {
-  const prof = Object.fromEntries(axes.map((a) => [a, 3]))
-  answers.forEach((optId, qi) => {
-    const opt = questions[qi]?.options.find((o) => o.id === optId)
-    Object.entries(opt?.p || {}).forEach(([k, v]) => { prof[k] += v })
-  })
-  return Object.fromEntries(axes.map((a) => [a, clamp(prof[a])]))
+  const prof = { intensity: 3, acidity: 3, sweetness: 3, body: 3, fruity: 3, chocolatey: 3 }
+  answers.forEach((optId, qi) => Object.assign(prof, targets[questions[qi]?.id]?.[optId] || {}))
+  return prof
 }
 
 export function recommend(answers, products) {
   const prof = tasteProfile(answers)
-  const cats = {}
-  answers.forEach((optId, qi) => {
-    const opt = questions[qi]?.options.find((o) => o.id === optId)
-    Object.entries(opt?.c || {}).forEach(([k, v]) => { cats[k] = (cats[k] || 0) + v })
-  })
   const ranked = products
     .map((p) => {
-      const dist = Math.sqrt(axes.reduce((s, a) => s + (p.profile[a] - prof[a]) ** 2, 0))
-      const bonus = cats[p.category] || 0
-      const score = -dist + 0.8 * bonus
-      // Match % is a monotonic mapping of the score, so the ranking and the percentages agree.
-      return { product: p, score, match: Math.round(Math.min(98, Math.max(60, 85 + score * 5))) }
+      const score = answers.reduce((sum, optId, qi) => sum + (questions[qi].options.find((o) => o.id === optId)?.pts[p.id] ?? 0), 0)
+      const dist = Math.sqrt(Object.keys(prof).reduce((s, a) => s + (p.profile[a] - prof[a]) ** 2, 0))
+      return { product: p, score, dist, match: Math.round((Math.max(0, score) / MAX_POINTS) * 100) }
     })
-    .sort((a, b) => b.score - a.score)
+    // Most points first; on equal points, the coffee closest to the visitor's taste.
+    .sort((a, b) => b.score - a.score || a.dist - b.dist)
   return { profile: prof, ranked }
+}
+
+// Brewing methods a coffee suits best, from its question-1 points:
+// every method scoring 4 or more, or the top-scoring method(s) if none do.
+export function bestFor(productId) {
+  const scored = questions[0].options.map((o) => [o.id, o.pts[productId]])
+  const good = scored.filter(([, v]) => v >= 4).map(([id]) => id)
+  if (good.length) return good
+  const top = Math.max(...scored.map(([, v]) => v))
+  return scored.filter(([, v]) => v === top).map(([id]) => id)
 }
