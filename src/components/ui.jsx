@@ -40,20 +40,20 @@ export function Magnetic({ children, strength = 0.35, className = '' }) {
   return <div ref={ref} className={`inline-block ${className}`}>{children}</div>
 }
 
-export function Button({ children, href = '#', variant = 'gold', className = '', ...rest }) {
+export function Button({ children, href = '#', variant = 'gold', className = '', as: Tag = 'a', ...rest }) {
   const styles = {
     gold: 'bg-gold text-espresso hover:bg-crema',
     ghost: 'border border-cream/25 text-cream hover:border-gold hover:text-gold',
     dark: 'bg-espresso text-cream hover:bg-roast',
   }
   return (
-    <a
-      href={href}
+    <Tag
+      {...(Tag === 'a' ? { href } : Tag === 'button' ? { type: 'button' } : {})}
       className={`group relative inline-flex min-h-12 items-center gap-3 overflow-hidden rounded-full px-7 py-3 text-sm font-semibold tracking-wide transition-colors duration-300 ${styles[variant]} ${className}`}
       {...rest}
     >
       {children}
-    </a>
+    </Tag>
   )
 }
 
@@ -63,5 +63,54 @@ export function Eyebrow({ children, className = '' }) {
       <span className="h-px w-8 bg-gold" />
       {children}
     </p>
+  )
+}
+
+// Fly a gold dot from an element to the cart icon.
+export function flyToCart(fromEl) {
+  const from = fromEl.getBoundingClientRect()
+  const to = document.querySelector('.cart-btn')?.getBoundingClientRect()
+  if (!to || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  const dot = document.createElement('span')
+  dot.className = 'fixed z-[70] size-4 rounded-full bg-gold pointer-events-none'
+  Object.assign(dot.style, { left: `${from.left + from.width / 2 - 8}px`, top: `${from.top + from.height / 2 - 8}px` })
+  document.body.appendChild(dot)
+  const dx = to.left + to.width / 2 - (from.left + from.width / 2)
+  const dy = to.top + to.height / 2 - (from.top + from.height / 2)
+  gsap.timeline({ onComplete: () => dot.remove() })
+    .to(dot, { x: dx, duration: 0.8, ease: 'power1.inOut' })
+    .to(dot, { y: dy, duration: 0.8, ease: 'back.in(1.4)' }, 0)
+    .to(dot, { scale: 0.4, duration: 0.8 }, 0)
+}
+
+// Full-bleed background photo with a tint overlay and a slow scroll parallax.
+// The parent section needs `relative isolate`; content after it needs `relative`.
+export function PhotoBg({ name, widths, overlay, position = 'center', blur = 0, eager = false }) {
+  const ref = useRef(null)
+  useGSAP(() => {
+    const mm = gsap.matchMedia()
+    mm.add(FULL, () => {
+      gsap.fromTo(ref.current.querySelector('img'), { yPercent: -6 }, {
+        yPercent: 6, ease: 'none',
+        scrollTrigger: { trigger: ref.current, start: 'top bottom', end: 'bottom top', scrub: true },
+      })
+    })
+  }, { scope: ref })
+  const largest = widths[widths.length - 1]
+  return (
+    <div ref={ref} className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+      <img
+        src={`/img/${name}-${largest}.webp`}
+        srcSet={widths.map((w) => `/img/${name}-${w}.webp ${w}w`).join(', ')}
+        sizes="100vw"
+        alt=""
+        loading={eager ? 'eager' : 'lazy'}
+        fetchPriority={eager ? 'high' : 'auto'}
+        decoding="async"
+        className="absolute inset-x-0 -top-[8%] h-[116%] w-full scale-105 object-cover"
+        style={{ objectPosition: position, filter: blur ? `blur(${blur}px)` : undefined }}
+      />
+      <div className="absolute inset-0" style={{ background: overlay }} />
+    </div>
   )
 }
