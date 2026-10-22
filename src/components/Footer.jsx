@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Link } from 'react-router'
 import { gsap, useGSAP, FULL } from '../lib/gsap'
 import { ArrowUpRight, ArrowRight, Instagram, Facebook, Mail, Truck, Cup } from './Art'
 import { Magnetic, Button, Eyebrow } from './ui'
@@ -36,7 +37,7 @@ export function Wholesale() {
           </p>
           <div className="ws-in mt-10 flex flex-wrap gap-4">
             <Magnetic>
-              <Button href="mailto:info@fuerte.gr" variant="dark">
+              <Button as={Link} to="/wholesale" variant="dark">
                 {w.cta} <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Button>
             </Magnetic>

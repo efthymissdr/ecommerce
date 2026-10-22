@@ -27,6 +27,12 @@ Each coffee has a page at `/products/<id>` (for example `/products/classico`). T
 
 Sizes, prices, grinds and brewing methods are set up in `productOptions` and `priceFor` in `src/data/content.js`. They are placeholders until Shopify variants replace them. The site is a single-page app, so the host must serve `index.html` for every path (on Netlify, `/* /index.html 200`; on Vercel, a rewrite to `/index.html`).
 
+## Wholesale page
+
+`/wholesale` (Χονδρική in the menu) has four sections: Private Label, Greek coffee, Office Coffee Solutions, and Professional solutions (coffee machine and accessory rental). A sticky tab bar jumps between them and highlights the current section. Each section's "Ask about this" button scrolls to an enquiry form with that topic preselected. The form opens the visitor's email app addressed to `wholesaleEmail` in `src/data/wholesale.js`; there is no server yet.
+
+All the page text (EL and EN) is in `src/data/wholesale.js`. To add a category, add an entry with the same `id` to `sections` in both languages, and it gets its own section, tab and form option.
+
 ## Shopify
 
 Cart lines already store the chosen variant (`{ id, size, roast, grind, qty }` in `src/App.jsx`), ready to map onto a Storefront API cart.

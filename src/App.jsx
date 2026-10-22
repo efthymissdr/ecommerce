@@ -16,6 +16,7 @@ import Quiz from './components/Quiz'
 import Footer, { Wholesale } from './components/Footer'
 // Loaded on demand so the home page bundle stays small.
 const ProductPage = lazy(() => import('./components/ProductPage'))
+const WholesalePage = lazy(() => import('./components/WholesalePage'))
 
 export default function App() {
   const { lang, setLang, t } = useLang()
@@ -130,6 +131,7 @@ export default function App() {
               </main>
             }
           />
+          <Route path="/wholesale" element={<Suspense fallback={<div className="min-h-svh" />}><WholesalePage /></Suspense>} />
           <Route path="/products/:id" element={<Suspense fallback={<div className="min-h-svh" />}><ProductPage onAdd={add} /></Suspense>} />
         </Routes>
         <Footer />

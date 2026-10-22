@@ -5,14 +5,16 @@ import { useLang, languages } from '../i18n'
 import { Bag2, Menu, Close, User } from './Art'
 import { shopify } from '../config'
 
-// Links to a home-page section that also work from other pages.
+// Links to a home-page section ("#shop") that also work from other pages,
+// or to a separate page ("/wholesale").
 export function SectionLink({ hash, children, ...rest }) {
   const { pathname } = useLocation()
+  if (hash.startsWith('/')) return <Link to={hash} aria-current={pathname === hash ? 'page' : undefined} {...rest}>{children}</Link>
   return pathname === '/' ? <a href={hash} {...rest}>{children}</a> : <Link to={`/${hash}`} {...rest}>{children}</Link>
 }
 
 // Same order as the sections on the page.
-export const linkIds = [['#quiz', 'quiz'], ['#shop', 'shop'], ['#story', 'story'], ['#craft', 'craft'], ['#wholesale', 'wholesale']]
+export const linkIds = [['#quiz', 'quiz'], ['#shop', 'shop'], ['#story', 'story'], ['#craft', 'craft'], ['/wholesale', 'wholesale']]
 
 function LangSwitch({ onChange }) {
   const { lang, t } = useLang()

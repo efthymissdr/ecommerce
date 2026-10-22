@@ -81,6 +81,7 @@ export const ArrowRight = icon(<><path d="M5 12h14" /><path d="m13 6 6 6-6 6" />
 export const ArrowUpRight = icon(<><path d="M7 17 17 7" /><path d="M8 7h9v9" /></>)
 export const User = icon(<><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></>)
 export const Bag2 = icon(<><path d="M6 7h12l1 13H5z" /><path d="M9 7a3 3 0 0 1 6 0" /></>)
+export const Check2 = icon(<path d="m5 12 5 5 9-10" />)
 export const Plus = icon(<><path d="M12 5v14" /><path d="M5 12h14" /></>)
 export const Leaf = icon(<><path d="M11 20A7 7 0 0 1 4 13c0-6 7-9 16-9 0 9-3 16-9 16Z" /><path d="M4 21c4-4 7-7 11-10" /></>)
 export const Flame = icon(<path d="M12 22c4 0 7-3 7-7 0-5-5-7-5-12-3 2-5 5-5 8-1-1-2-2-2-4-2 2-2 5-2 8 0 4 3 7 7 7Z" />)

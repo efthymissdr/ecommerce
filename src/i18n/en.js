@@ -143,8 +143,8 @@ export default {
     kicker: 'For cafés, hotels & offices',
     title: 'Serve FUERTE',
     titleEm: 'in your space.',
-    copy: 'Custom blends, barista training and equipment support for businesses across Greece.',
-    cta: 'Become a partner',
+    copy: 'Private label, Greek coffee, office coffee solutions and coffee machine rental for businesses across Greece.',
+    cta: 'See wholesale solutions',
   },
   footer: {
     newsletter: 'Newsletter',
