@@ -14,6 +14,7 @@ export default {
     open: 'Open menu',
     close: 'Close menu',
     skip: 'Skip to shop',
+    toTop: 'Back to top',
   },
   hero: {
     badge: 'Roasting in Greece since 1997',
@@ -38,6 +39,7 @@ export default {
     copy: 'Single origins from six countries and three FUERTE house blends — roasted fresh and shipped across Greece.',
     filter: 'Filter coffees',
     categories: { all: 'All coffees', single: 'Single origins', blend: 'Blends' },
+    categoriesShort: { all: 'All' },
     roast: 'Intensity',
     roastAria: (n) => `Intensity ${n} of 5`,
     add: 'Add',

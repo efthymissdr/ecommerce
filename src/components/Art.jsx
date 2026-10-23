@@ -79,6 +79,7 @@ const icon = (d) =>
 
 export const ArrowRight = icon(<><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></>)
 export const ArrowUpRight = icon(<><path d="M7 17 17 7" /><path d="M8 7h9v9" /></>)
+export const ArrowUp = icon(<><path d="M12 19V5" /><path d="m6 11 6-6 6 6" /></>)
 export const User = icon(<><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></>)
 export const Bag2 = icon(<><path d="M6 7h12l1 13H5z" /><path d="M9 7a3 3 0 0 1 6 0" /></>)
 export const Check2 = icon(<path d="m5 12 5 5 9-10" />)

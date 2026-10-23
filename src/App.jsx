@@ -8,6 +8,7 @@ import Preloader from './components/Preloader'
 import Nav from './components/Nav'
 import ScrollProgress from './components/ScrollProgress'
 import AuthPanel from './components/AuthPanel'
+import ToTop from './components/ToTop'
 import { useAuth } from './account/AuthContext'
 import Hero from './components/Hero'
 import Marquee from './components/Marquee'
@@ -90,6 +91,14 @@ export default function App() {
     return () => clearTimeout(id)
   }, [pathname, hash])
 
+  // Smooth scroll back to the top (instant when reduced motion is on).
+  const toTop = (e) => {
+    if (lenis.current) lenis.current.scrollTo(0, { duration: 1.4 })
+    else window.scrollTo({ top: 0, behavior: 'auto' })
+    // The button hides at the top, so keyboard focus moves to the logo link.
+    if (e.detail === 0) document.querySelector('header a')?.focus({ preventScroll: true })
+  }
+
   // Swap language behind a curtain: the page content remounts in the new
   // language, scroll-driven animations are re-measured, and the scroll
   // position is restored before the curtain lifts.
@@ -125,6 +134,7 @@ export default function App() {
       </div>
       <ScrollProgress />
       <AuthPanel />
+      <ToTop onClick={toTop} />
       <Nav cartCount={cartCount} bump={bump} onLang={switchLang} />
       <div key={lang} className="overflow-x-clip">
         <Routes>

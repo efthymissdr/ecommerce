@@ -159,8 +159,15 @@ export default function Collections({ onAdd }) {
 
   // Pill indicator slides under the active tab.
   useGSAP(() => {
-    const active = root.current.querySelector('[aria-selected="true"]')
-    gsap.to('.tab-pill', { x: active.offsetLeft, width: active.offsetWidth, duration: 0.6, ease: 'expo.out' })
+    const place = (duration) => {
+      const active = root.current.querySelector('[aria-selected="true"]')
+      gsap.to('.tab-pill', { x: active.offsetLeft, width: active.offsetWidth, duration, ease: 'expo.out', overwrite: true })
+    }
+    place(0.6)
+    // Tabs stretch to the screen width on phones, so follow resizes and font loading.
+    const ro = new ResizeObserver(() => place(0))
+    root.current.querySelectorAll('[role="tab"]').forEach((el) => ro.observe(el))
+    return () => ro.disconnect()
   }, { scope: root, dependencies: [tab] })
 
   useGSAP(() => {
@@ -189,8 +196,9 @@ export default function Collections({ onAdd }) {
           <p className="max-w-sm text-stone">{s.copy}</p>
         </div>
 
-        <div className="-mx-5 mt-12 overflow-x-auto px-5 md:mx-0 md:px-0">
-          <div role="tablist" aria-label={s.filter} className="relative inline-flex gap-1 rounded-full border border-espresso/10 bg-white/60 p-1">
+        <div className="mt-12">
+          {/* Full width with equal-share tabs on phones, so the filter never needs to scroll sideways. */}
+          <div role="tablist" aria-label={s.filter} className="relative flex w-full gap-1 rounded-full border border-espresso/10 bg-white/60 p-1 sm:inline-flex sm:w-auto">
             <span className="tab-pill absolute left-0 top-1 bottom-1 rounded-full bg-espresso" aria-hidden="true" />
             {categoryIds.map((id) => (
               <button
@@ -198,9 +206,12 @@ export default function Collections({ onAdd }) {
                 role="tab"
                 aria-selected={tab === id}
                 onClick={() => choose(id)}
-                className={`relative z-10 min-h-11 whitespace-nowrap rounded-full px-5 text-sm font-medium transition-colors duration-300 ${tab === id ? 'text-cream' : 'text-stone hover:text-espresso'}`}
+                className={`relative z-10 min-h-11 flex-auto whitespace-nowrap rounded-full px-3 text-[13px] font-medium transition-colors duration-300 sm:flex-none sm:px-5 sm:text-sm ${tab === id ? 'text-cream' : 'text-stone hover:text-espresso'}`}
               >
-                {s.categories[id]}
+                {/* Shorter label on phones ("All" instead of "All coffees"). */}
+                {s.categoriesShort?.[id]
+                  ? <><span className="sm:hidden">{s.categoriesShort[id]}</span><span className="hidden sm:inline">{s.categories[id]}</span></>
+                  : s.categories[id]}
               </button>
             ))}
           </div>
