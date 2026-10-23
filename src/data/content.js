@@ -13,10 +13,10 @@ export const axes = ['intensity', 'acidity', 'sweetness', 'body', 'fruity', 'cho
 const prof = (intensity, acidity, sweetness, body, fruity, chocolatey) => ({ intensity, acidity, sweetness, body, fruity, chocolatey })
 
 const catalogue = [
-  { id: 'colombia', name: 'Colombia Bucaramanga SHG EP', category: 'single', country: 'colombia', lot: 'Bucaramanga', grade: 'SHG EP', price: 12.9, bag: '#7c2d12', ink: '#f5efe6', profile: prof(4, 3, 3, 4, 2, 4) },
+  { id: 'colombia', name: 'Colombia Bucaramanga SHG EP', category: 'single', country: 'colombia', lot: 'Bucaramanga', grade: 'SHG EP', price: 12.9, photo: { name: 'pack-colombia', small: 91, large: 346 }, bag: '#7c2d12', ink: '#f5efe6', profile: prof(4, 3, 3, 4, 2, 4) },
   { id: 'costarica', name: 'Costa Rica Pastora Estate Tarrazu SHB', category: 'single', country: 'costarica', lot: 'Pastora Estate, Tarrazú', grade: 'SHB', price: 12.9, bag: '#0f5257', ink: '#f5efe6', profile: prof(3, 3, 4, 3, 3, 3) },
   { id: 'brazil', name: 'Brazil Carmo Estate', category: 'single', country: 'brazil', lot: 'Carmo Estate', price: 11.9, bag: '#a16207', ink: '#f5efe6', profile: prof(3, 2, 4, 4, 1, 5) },
-  { id: 'ethiopia', name: 'Ethiopia Aricha Wubanchi', category: 'single', country: 'ethiopia', lot: 'Aricha Wubanchi', price: 13.9, bag: '#e7dccb', ink: '#7c2d12', profile: prof(4, 5, 4, 3, 5, 1) },
+  { id: 'ethiopia', name: 'Ethiopia Aricha Wubanchi', category: 'single', country: 'ethiopia', lot: 'Aricha Wubanchi', price: 13.9, photo: { name: 'pack-ethiopia', small: 92, large: 341 }, bag: '#e7dccb', ink: '#7c2d12', profile: prof(4, 5, 4, 3, 5, 1) },
   { id: 'honduras', name: 'Honduras La Tina', category: 'single', country: 'honduras', lot: 'La Tina', price: 12.9, bag: '#1e3a5f', ink: '#f5efe6', profile: prof(4, 5, 3, 4, 4, 2) },
   { id: 'rwanda', name: 'Rwanda', category: 'single', country: 'rwanda', price: 12.9, bag: '#5b2a86', ink: '#f5efe6', profile: prof(3, 3, 4, 2, 3, 1) },
   { id: 'yellow', name: 'Yellow Blend', category: 'blend', price: 9.9, bag: '#f2c200', ink: '#17110c', profile: prof(3, 2, 4, 3, 1, 3) },

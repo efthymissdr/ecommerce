@@ -1,4 +1,4 @@
-// Hand-drawn SVG art (no raster assets): coffee beans, bags, cup, icons.
+// Hand-drawn SVG art: coffee beans, bags (or a real pack photo when there is one), cup, icons.
 
 export function Bean({ className = '', color = 'currentColor', crease = '#0f0b08', style }) {
   return (
@@ -11,7 +11,25 @@ export function Bean({ className = '', color = 'currentColor', crease = '#0f0b08
 }
 
 export function Bag({ product, className = '' }) {
-  const { bag, ink, name, kicker, weight, roast } = product
+  const { bag, ink, name, kicker, weight, roast, photo } = product
+  // Real pack photo (transparent background) when there is one, in the same
+  // 220×300 box as the drawing so every layout and animation stays the same.
+  if (photo) {
+    return (
+      <span className={`block aspect-[220/300] ${className}`}>
+        <img
+          src={`/img/${photo.name}-760.webp`}
+          srcSet={`/img/${photo.name}-200.webp ${photo.small}w, /img/${photo.name}-760.webp ${photo.large}w`}
+          sizes="auto, (max-width: 640px) 45vw, 22vw"
+          loading="lazy"
+          decoding="async"
+          alt={`${name} coffee bag`}
+          className="size-full object-contain"
+          draggable="false"
+        />
+      </span>
+    )
+  }
   const label = product.bagName || name
   return (
     <svg viewBox="0 0 220 300" className={className} role="img" aria-label={`${name} coffee bag`}>

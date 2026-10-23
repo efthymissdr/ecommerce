@@ -126,7 +126,7 @@ export default function Hero({ ready }) {
               </text>
             </svg>
             <div className="hero-bag hero-bag-a absolute left-[6%] top-[14%] w-[44%] drop-shadow-[0_40px_40px_rgba(0,0,0,.55)] [transform:translateZ(60px)]">
-              <Bag product={products.find((p) => p.id === 'yellow')} />
+              <Bag product={products.find((p) => p.id === 'colombia')} />
             </div>
             <div className="hero-bag hero-bag-b absolute right-[4%] top-[24%] w-[40%] drop-shadow-[0_40px_40px_rgba(0,0,0,.55)] [transform:translateZ(30px)]">
               <Bag product={products.find((p) => p.id === 'ethiopia')} />
