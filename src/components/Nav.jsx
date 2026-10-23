@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router'
 import { gsap, useGSAP, ScrollTrigger } from '../lib/gsap'
 import { useLang, languages } from '../i18n'
 import { Bag2, Menu, Close, User } from './Art'
-import { shopify } from '../config'
+import { useAuth } from '../account/AuthContext'
 
 // Links to a home-page section ("#shop") that also work from other pages,
 // or to a separate page ("/wholesale").
@@ -56,6 +56,7 @@ function LangSwitch({ onChange }) {
 
 export default function Nav({ cartCount, bump, onLang }) {
   const { t } = useLang()
+  const { customer, openPanel } = useAuth()
   const root = useRef(null)
   const [open, setOpen] = useState(false)
 
@@ -102,16 +103,21 @@ export default function Nav({ cartCount, bump, onLang }) {
         </ul>
         <div className="flex items-center gap-1 md:gap-1.5">
           <LangSwitch onChange={onLang} />
-          <a
-            href={shopify.accountUrl}
+          {/* Opens the login / account panel. */}
+          <button
+            type="button"
+            onClick={() => openPanel('login')}
+            aria-haspopup="dialog"
             className="account-btn group/acc relative grid size-10 md:size-11 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10"
-            aria-label={t.nav.account}
+            aria-label={customer ? `${t.nav.account}: ${customer.firstName}` : t.nav.account}
           >
-            <User className="size-5 transition-transform duration-300 group-hover/acc:scale-110" />
+            {customer
+              ? <span className="grid size-8 place-items-center rounded-full bg-gold font-display text-lg leading-none text-espresso transition-transform duration-300 group-hover/acc:scale-110">{customer.firstName.slice(0, 1).toUpperCase()}</span>
+              : <User className="size-5 transition-transform duration-300 group-hover/acc:scale-110" />}
             <span className="pointer-events-none absolute top-full mt-2 hidden translate-y-1 whitespace-nowrap rounded-full bg-cream px-3 py-1 text-xs font-semibold text-espresso opacity-0 transition-all duration-300 group-hover/acc:translate-y-0 group-hover/acc:opacity-100 md:block" aria-hidden="true">
               {t.nav.account}
             </span>
-          </a>
+          </button>
           <SectionLink hash="#shop" className="cart-btn relative grid size-10 md:size-11 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10" aria-label={t.nav.cart(cartCount)}>
             <Bag2 />
             <span className="cart-badge absolute right-1 top-1 grid size-4.5 place-items-center rounded-full bg-gold text-[10px] font-bold text-espresso">{cartCount}</span>

@@ -33,11 +33,21 @@ Sizes, prices, grinds and brewing methods are set up in `productOptions` and `pr
 
 All the page text (EL and EN) is in `src/data/wholesale.js`. To add a category, add an entry with the same `id` to `sections` in both languages, and it gets its own section, tab and form option.
 
+## Customer accounts (demo, ready for Shopify)
+
+The account icon in the menu opens a side panel with **Log in** and **Sign up** forms, including validation, show/hide password, a password-strength bar, "forgot password" and terms and newsletter checkboxes. Once logged in, the icon shows the customer's initial, and the panel shows their points and links to the account page.
+
+`/account` has four tabs:
+- **Overview:** points, orders and addresses at a glance, the latest order and the customer's details.
+- **Orders:** status filter, expandable details (items, address, payment, totals, points earned) and "Order again", which adds the items to the cart.
+- **Addresses:** add, edit, delete and set default, with Greek postal code and phone checks.
+- **Points:** balance, progress to the next reward, how it works, and history.
+
+**No backend yet.** All of this talks only to `src/account/service.js`. Right now that file is a browser-only demo: accounts live in `localStorage`, any new email logs in to a sample account with demo orders, and nothing leaves the device. Each function there is documented with the Shopify call that replaces it: the Customer Account API for login, customer, orders and addresses. Points need a loyalty app, because Shopify has no built-in points. The points rules (`pointsRules`) are examples. UI text is in `src/account/text.js`.
+
 ## Shopify
 
-Cart lines already store the chosen variant (`{ id, size, roast, grind, qty }` in `src/App.jsx`), ready to map onto a Storefront API cart.
-
-The account button in the navigation links to `shopify.accountUrl` in `src/config.js`, which is currently `/account`. When the store is connected, set it to the store's customer account URL: `https://shopify.com/<shop-id>/account` for new customer accounts, or `https://<store-domain>/account` for classic ones.
+Cart lines already store the chosen variant (`{ id, size, roast, grind, qty }` in `src/App.jsx`), ready to map onto a Storefront API cart. Customer accounts: see above and `src/config.js`.
 
 ## Photos
 

@@ -7,6 +7,8 @@ import { useLang, languages } from './i18n'
 import Preloader from './components/Preloader'
 import Nav from './components/Nav'
 import ScrollProgress from './components/ScrollProgress'
+import AuthPanel from './components/AuthPanel'
+import { useAuth } from './account/AuthContext'
 import Hero from './components/Hero'
 import Marquee from './components/Marquee'
 import Collections from './components/Collections'
@@ -17,6 +19,7 @@ import Footer, { Wholesale } from './components/Footer'
 // Loaded on demand so the home page bundle stays small.
 const ProductPage = lazy(() => import('./components/ProductPage'))
 const WholesalePage = lazy(() => import('./components/WholesalePage'))
+const AccountPage = lazy(() => import('./components/AccountPage'))
 
 export default function App() {
   const { lang, setLang, t } = useLang()
@@ -26,6 +29,7 @@ export default function App() {
   // Lives here so quiz progress survives a language switch.
   const [quiz, setQuiz] = useState({ step: -1, answers: [], pick: null })
   const lenis = useRef(null)
+  const { panel } = useAuth()
   const curtain = useRef(null)
   const switching = useRef(false)
 
@@ -57,6 +61,12 @@ export default function App() {
     ro.observe(document.body)
     return () => { ro.disconnect(); clearTimeout(timer) }
   }, [])
+
+  // Freeze page scrolling while the login panel is open.
+  useEffect(() => {
+    if (panel) { lenis.current?.stop(); document.documentElement.style.overflow = 'hidden' }
+    else { lenis.current?.start(); document.documentElement.style.overflow = '' }
+  }, [panel])
 
   // Cart lines carry the chosen variant; quick-adds from the grid use the defaults.
   // TODO(shopify): replace with a Storefront API cart.
@@ -114,6 +124,7 @@ export default function App() {
         <span className="overflow-hidden"><span className="lc-label block font-display text-6xl italic text-gold md:text-8xl" /></span>
       </div>
       <ScrollProgress />
+      <AuthPanel />
       <Nav cartCount={cartCount} bump={bump} onLang={switchLang} />
       <div key={lang} className="overflow-x-clip">
         <Routes>
@@ -131,6 +142,7 @@ export default function App() {
               </main>
             }
           />
+          <Route path="/account/:section?" element={<Suspense fallback={<div className="min-h-svh" />}><AccountPage onAdd={add} /></Suspense>} />
           <Route path="/wholesale" element={<Suspense fallback={<div className="min-h-svh" />}><WholesalePage /></Suspense>} />
           <Route path="/products/:id" element={<Suspense fallback={<div className="min-h-svh" />}><ProductPage onAdd={add} /></Suspense>} />
         </Routes>
