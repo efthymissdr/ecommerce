@@ -5,6 +5,9 @@ import { ArrowUpRight, ArrowRight, Instagram, Facebook, Mail, Truck, Cup } from 
 import { Magnetic, Button, Eyebrow } from './ui'
 import { useLang } from '../i18n'
 import { linkIds, SectionLink } from './Nav'
+import PaymentIcons from './PaymentIcons'
+
+const legalSlugs = ['terms', 'privacy', 'payment', 'shipping', 'returns']
 
 export function Wholesale() {
   const { t } = useLang()
@@ -73,8 +76,8 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <img src="/img/logo.webp" alt="FUERTE Coffee Roasters" width="458" height="160" loading="lazy" className="h-16 w-auto md:h-20" />
       </div>
-      <div className="mx-auto mt-14 grid max-w-7xl gap-14 px-5 md:px-8 lg:grid-cols-[1.3fr_1fr_1fr]">
-        <div>
+      <div className="mx-auto mt-14 grid max-w-7xl gap-14 px-5 md:px-8 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.1fr_1fr]">
+        <div className="sm:col-span-2 lg:col-span-1">
           <Eyebrow>{f.newsletter}</Eyebrow>
           <h3 className="mt-5 font-display text-4xl text-cream md:text-5xl">{f.title}</h3>
           {sent ? (
@@ -98,6 +101,14 @@ export default function Footer() {
             ))}
           </ul>
         </nav>
+        <nav aria-label={f.info}>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">{f.info}</p>
+          <ul className="mt-5 space-y-3">
+            {legalSlugs.map((s) => (
+              <li key={s}><Link to={`/legal/${s}`} className="text-cream/80 transition-colors hover:text-gold">{f.legal[s]}</Link></li>
+            ))}
+          </ul>
+        </nav>
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">{f.hello}</p>
           <ul className="mt-5 space-y-3 text-cream/80">
@@ -116,9 +127,12 @@ export default function Footer() {
       <p className="ft-word mt-20 flex select-none justify-center overflow-hidden font-display text-[23vw] leading-[0.8] tracking-tight text-cream/[0.06]" aria-hidden="true">
         {'FUERTE'.split('').map((l, i) => <span key={i} className="ft-letter inline-block">{l}</span>)}
       </p>
-      <div className="mx-auto flex max-w-7xl flex-col justify-between gap-2 border-t border-cream/10 px-5 py-6 text-xs text-muted md:flex-row md:px-8">
-        <p>{f.rights(new Date().getFullYear())}</p>
-        <p>{f.tagline}</p>
+      <div className="mx-auto flex max-w-7xl flex-col justify-between gap-5 border-t border-cream/10 px-5 py-6 text-xs text-muted md:flex-row md:items-center md:px-8">
+        <div className="space-y-1">
+          <p>{f.rights(new Date().getFullYear())}</p>
+          <p>{f.tagline}</p>
+        </div>
+        <PaymentIcons label={f.payments} />
       </div>
     </footer>
   )

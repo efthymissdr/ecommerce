@@ -21,6 +21,7 @@ import Footer, { Wholesale } from './components/Footer'
 const ProductPage = lazy(() => import('./components/ProductPage'))
 const WholesalePage = lazy(() => import('./components/WholesalePage'))
 const AccountPage = lazy(() => import('./components/AccountPage'))
+const LegalPage = lazy(() => import('./components/LegalPage'))
 
 export default function App() {
   const { lang, setLang, t } = useLang()
@@ -154,6 +155,7 @@ export default function App() {
           />
           <Route path="/account/:section?" element={<Suspense fallback={<div className="min-h-svh" />}><AccountPage onAdd={add} /></Suspense>} />
           <Route path="/wholesale" element={<Suspense fallback={<div className="min-h-svh" />}><WholesalePage /></Suspense>} />
+          <Route path="/legal/:slug" element={<Suspense fallback={<div className="min-h-svh" />}><LegalPage /></Suspense>} />
           <Route path="/products/:id" element={<Suspense fallback={<div className="min-h-svh" />}><ProductPage onAdd={add} /></Suspense>} />
         </Routes>
         <Footer />
