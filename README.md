@@ -43,6 +43,8 @@ The account icon in the menu opens a side panel with **Log in** and **Sign up** 
 - **Addresses:** add, edit, delete and set default, with Greek postal code and phone checks.
 - **Points:** balance, progress to the next reward, how it works, and history.
 
+**Demo customer:** `demo@fuerte.gr` / `Fuerte2026!` (Γιώργος Παπαδόπουλος, with 4 orders, 2 addresses and 80 points). The login panel also has a one-click "Log in with the demo account" button. Remove both (`demoUser` in `src/account/service.js` and the button in `AuthPanel.jsx`) when Shopify is connected.
+
 **No backend yet.** All of this talks only to `src/account/service.js`. Right now that file is a browser-only demo: accounts live in `localStorage`, any new email logs in to a sample account with demo orders, and nothing leaves the device. Each function there is documented with the Shopify call that replaces it: the Customer Account API for login, customer, orders and addresses. Points need a loyalty app, because Shopify has no built-in points. The points rules (`pointsRules`) are examples. UI text is in `src/account/text.js`.
 
 ## Shopify

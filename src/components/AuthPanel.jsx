@@ -4,6 +4,7 @@ import { gsap, useGSAP } from '../lib/gsap'
 import { useLang } from '../i18n'
 import { useAuth } from '../account/AuthContext'
 import { accountText } from '../account/text'
+import { demoUser } from '../account/service'
 import { Close, Check2, ArrowRight, User } from './Art'
 
 const emailOk = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())
@@ -97,6 +98,15 @@ function LoginForm({ p, onSwitch, onDone }) {
       <button type="submit" disabled={busy} className="flex min-h-12 w-full items-center justify-center gap-3 rounded-full bg-gold px-7 text-sm font-semibold text-espresso transition-colors hover:bg-crema disabled:opacity-70">
         {busy ? <Spinner /> : <>{p.login} <ArrowRight className="size-4" /></>}
       </button>
+      {/* Demo only: remove when Shopify login is connected. */}
+      <div className="rounded-2xl border border-dashed border-gold/40 p-4 text-center">
+        <button type="button" disabled={busy}
+          onClick={async () => { setBusy(true); try { await login({ ...demoUser, remember: true }); onDone() } finally { setBusy(false) } }}
+          className="min-h-11 w-full rounded-full border border-gold/60 px-5 text-sm font-semibold text-gold transition-colors hover:bg-gold hover:text-espresso">
+          {p.demoUser}
+        </button>
+        <p className="mt-2 text-xs text-muted">{p.demoHint(demoUser.email, demoUser.password)}</p>
+      </div>
       <p className="text-center text-sm text-cream/60">{p.noAccount} <button type="button" onClick={onSwitch} className="font-semibold text-gold hover:underline">{p.switchRegister}</button></p>
     </form>
   )

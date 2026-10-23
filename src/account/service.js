@@ -27,7 +27,18 @@ const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } cat
 const wait = (ms = 450) => new Promise((r) => setTimeout(r, ms)) // feels like a network call
 const norm = (e) => e.trim().toLowerCase()
 
-function accounts() { return read(KEY, {}) }
+// Fixed demo customer, always available so the account page can be previewed.
+export const demoUser = { email: 'demo@fuerte.gr', password: 'Fuerte2026!' }
+
+function accounts() {
+  const all = read(KEY, {})
+  // (Re)create it if missing, or if an earlier test session left it with another password.
+  if (all[demoUser.email]?.password !== demoUser.password) {
+    all[demoUser.email] = sampleAccount({ ...demoUser, firstName: 'Γιώργος', lastName: 'Παπαδόπουλος', phone: '6912345678', newsletter: true }, true)
+    write(KEY, all)
+  }
+  return all
+}
 function save(acc) { const all = accounts(); all[acc.email] = acc; write(KEY, all) }
 
 function publicCustomer(acc) {
