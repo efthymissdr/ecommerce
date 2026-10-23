@@ -202,6 +202,10 @@ export default function AuthPanel() {
   const lastFocus = useRef(null)
   const [mounted, setMounted] = useState(false)
   const mode = panel || 'login'
+  const open = !!panel
+  const body = useRef(null)
+  const lastHeight = useRef(0)
+  const lastMode = useRef(mode)
 
   // Open / close with a slide; stay mounted until the exit animation ends.
   useEffect(() => {
@@ -226,13 +230,31 @@ export default function AuthPanel() {
         .to('.ap-sheet', { xPercent: 100, duration: 0.5 * d, ease: 'expo.in' })
         .to('.ap-overlay', { autoAlpha: 0, duration: 0.3 * d }, '-=0.2')
     }
-  }, { scope: root, dependencies: [panel, mounted] })
+  }, { scope: root, dependencies: [open, mounted] })
 
-  // Content entrance when switching between login and sign up.
+  // Content entrance when the panel opens (or after logging in / out).
   useGSAP(() => {
-    if (!panel || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!open || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     gsap.fromTo('.ap-in', { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.6, stagger: 0.06, ease: 'expo.out', delay: 0.15 })
-  }, { scope: root, dependencies: [panel, !!customer, mounted] })
+  }, { scope: root, dependencies: [open, !!customer, mounted] })
+
+  // Switching between log in and sign up: the new content slides in from the
+  // side of its tab, and the height eases from the old size to the new one.
+  // Transform, opacity and one height tween only, so it stays light.
+  useGSAP(() => {
+    const el = body.current
+    if (!el) return
+    const from = lastHeight.current
+    const to = el.offsetHeight
+    lastHeight.current = to
+    if (lastMode.current === mode) return
+    const dir = mode === 'register' ? 1 : -1
+    lastMode.current = mode
+    if (!from || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.killTweensOf([el, el.children])
+    gsap.fromTo(el, { height: from, overflow: 'hidden' }, { height: to, duration: 0.45, ease: 'power3.out', clearProps: 'height,overflow' })
+    gsap.fromTo(el.children, { x: 28 * dir, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, stagger: 0.04, ease: 'power3.out', clearProps: 'transform,opacity,visibility' })
+  }, { scope: root, dependencies: [mode, mounted, !!customer] })
 
   // Pill under the active tab.
   useGSAP(() => {
@@ -283,6 +305,7 @@ export default function AuthPanel() {
                   </button>
                 ))}
               </div>
+              <div ref={body}>
               <h2 id="ap-title" className="ap-in mt-8 font-display text-5xl leading-[0.95] text-cream">
                 {mode === 'login' ? p.loginTitle : p.registerTitle} <em className="text-gold">{mode === 'login' ? p.loginTitleEm : p.registerTitleEm}</em>
               </h2>
@@ -296,6 +319,7 @@ export default function AuthPanel() {
                 {mode === 'login'
                   ? <LoginForm p={p} onSwitch={() => openPanel('register')} onDone={closePanel} />
                   : <RegisterForm p={p} onSwitch={() => openPanel('login')} onDone={closePanel} />}
+              </div>
               </div>
             </>
           )}
