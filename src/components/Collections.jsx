@@ -52,7 +52,8 @@ function ProductCard({ p, onAdd }) {
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-[radial-gradient(400px_circle_at_var(--mx,50%)_var(--my,50%),rgba(200,161,90,.22),transparent_60%)]" />
       {/* Image duplicates the title link, so it is hidden from keyboard and screen readers. */}
       <Link to={`/products/${p.id}`} tabIndex={-1} aria-hidden="true" className="relative grid aspect-[4/4.2] place-items-center overflow-hidden rounded-3xl" style={{ background: `radial-gradient(circle at 50% 60%, ${p.bag}33, transparent 70%), #efe7da` }}>
-        <span className="absolute left-4 top-4 rounded-full bg-espresso/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-cream">
+        {/* z-10 keeps the tag above the pack, which lifts on hover. */}
+        <span className="absolute left-4 top-4 z-10 rounded-full bg-espresso/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-cream">
           {t.shop.categories[p.category]}
         </span>
         <div className="pc-bag w-[58%] drop-shadow-[0_24px_24px_rgba(15,11,8,.35)]">
