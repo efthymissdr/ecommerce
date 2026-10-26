@@ -1,0 +1,170 @@
+// Content of the Wholesale page (/wholesale), in Greek and English.
+// Each entry in `sections` becomes one section of the page and one tab in its
+// sub-navigation. To add a category, add an object to both languages with the
+// same `id`. Text is general on purpose: specific terms (quantities, machine
+// models, prices) are for FUERTE to fill in.
+
+const el = {
+  eyebrow: 'Χονδρική',
+  title: 'Λύσεις καφέ',
+  titleEm: 'για επιχειρήσεις.',
+  intro: 'Από τον δικό σας καφέ με το δικό σας όνομα μέχρι τον καφέ του γραφείου και τον εξοπλισμό του καταστήματός σας — βρείτε τη λύση που ταιριάζει στη συνεργασία σας.',
+  jump: 'Ενότητες',
+  ask: 'Ζητήστε πληροφορίες',
+  sections: [
+    {
+      id: 'private-label',
+      kicker: 'Private Label',
+      title: 'Ο καφές σας,',
+      titleEm: 'με το δικό σας όνομα.',
+      lead: 'Δημιουργούμε προϊόντα καφέ με την επωνυμία σας. Εσείς επιλέγετε τον καφέ, τη συσκευασία και την εικόνα — εμείς τα καβουρδίζουμε και τα συσκευάζουμε με την ίδια φροντίδα που δίνουμε στους δικούς μας καφέδες.',
+      cards: [
+        { icon: 'box', title: 'Επιλογές συσκευασίας', body: 'Διαφορετικοί τύποι και μεγέθη συσκευασίας, ανάλογα με το πού και πώς θα διατεθεί το προϊόν σας.' },
+        { icon: 'tag', title: 'Ταυτότητα προϊόντος', body: 'Το όνομα, το λογότυπο και η εικόνα σας στη συσκευασία, για ένα προϊόν που μοιάζει πραγματικά δικό σας.' },
+        { icon: 'beans', title: 'Διαθέσιμες λύσεις', body: 'Επιλέξτε ανάμεσα σε μονοποικιλιακούς καφέδες και χαρμάνια, για espresso, φίλτρου ή ελληνικό καφέ.' },
+      ],
+      stepsTitle: 'Πώς λειτουργεί',
+      steps: ['Γνωριμία και καταγραφή των αναγκών σας', 'Επιλογή καφέ και συσκευασίας', 'Σχεδιασμός της ταυτότητας του προϊόντος', 'Καβούρδισμα, συσκευασία και παράδοση'],
+    },
+    {
+      id: 'greek-coffee',
+      kicker: 'Ελληνικός καφές',
+      title: 'Εκεί που',
+      titleEm: 'ξεκίνησαν όλα.',
+      lead: 'Ο ελληνικός καφές είναι η αρχή της ιστορίας μας από το 1997. Τον καβουρδίζουμε και τον αλέθουμε για το μπρίκι και τον προσφέρουμε σε επιχειρήσεις που θέλουν σταθερή ποιότητα σε κάθε φλιτζάνι.',
+      featuresTitle: 'Χαρακτηριστικά',
+      features: ['100% Arabica', 'Ψιλό άλεσμα για μπρίκι', 'Πλούσιο καϊμάκι', 'Σταθερή γεύση από παρτίδα σε παρτίδα'],
+      cards: [
+        { icon: 'cup', title: 'Για καφέ και εστίαση', body: 'Ελληνικός καφές για καφετέριες, εστιατόρια και ξενοδοχεία.' },
+        { icon: 'store', title: 'Για λιανική', body: 'Συσκευασίες για καταστήματα και σημεία πώλησης.' },
+        { icon: 'tag', title: 'Με τη δική σας επωνυμία', body: 'Διαθέσιμος και ως private label, με το δικό σας όνομα.' },
+      ],
+    },
+    {
+      id: 'office',
+      kicker: 'Office Coffee Solutions',
+      title: 'Καλός καφές',
+      titleEm: 'σε κάθε γραφείο.',
+      lead: 'Λύσεις για γραφεία και μεγάλες επιχειρήσεις, προσαρμοσμένες στις ανάγκες κάθε συνεργασίας — από μια μικρή ομάδα μέχρι πολλούς χώρους εργασίας.',
+      cards: [
+        { icon: 'truck', title: 'Προμήθεια καφέ', body: 'Τακτική προμήθεια καφέ, ώστε να μη μείνετε ποτέ χωρίς.' },
+        { icon: 'box', title: 'Επαγγελματικές συσκευασίες', body: 'Συσκευασίες κατάλληλες για επαγγελματική χρήση και μεγαλύτερες ποσότητες.' },
+        { icon: 'machine', title: 'Εξοπλισμός', body: 'Μηχανές και εξοπλισμός παρασκευής καφέ για τον χώρο σας.' },
+        { icon: 'support', title: 'Υποστήριξη', body: 'Είμαστε δίπλα σας για ό,τι χρειαστείτε κατά τη διάρκεια της συνεργασίας.' },
+      ],
+    },
+    {
+      id: 'professional',
+      kicker: 'Επαγγελματικές λύσεις',
+      title: 'Ό,τι χρειάζεται',
+      titleEm: 'η επιχείρησή σας.',
+      lead: 'Λύσεις και για τα υπόλοιπα προϊόντα και τις υπηρεσίες μας, ώστε να βρίσκετε εύκολα αυτό που σας ενδιαφέρει.',
+      cards: [
+        { icon: 'machine', title: 'Ενοικίαση συσκευών καφέ', body: 'Ενοικίαση συσκευών παρασκευής καφέ για επιχειρήσεις, χωρίς το κόστος αγοράς.' },
+        { icon: 'grinder', title: 'Εξαρτήματα', body: 'Ενοικίαση και διάθεση εξαρτημάτων για την παρασκευή καφέ.' },
+        { icon: 'chat', title: 'Κάτι άλλο;', body: 'Πείτε μας τι χρειάζεστε και θα βρούμε μαζί τη λύση.', contact: true },
+      ],
+    },
+  ],
+  form: {
+    eyebrow: 'Επικοινωνία',
+    title: 'Ας μιλήσουμε',
+    titleEm: 'για τη συνεργασία μας.',
+    intro: 'Συμπληρώστε τη φόρμα και θα επικοινωνήσουμε μαζί σας.',
+    name: 'Ονοματεπώνυμο',
+    company: 'Επιχείρηση',
+    email: 'Email',
+    phone: 'Τηλέφωνο',
+    interest: 'Με ενδιαφέρει',
+    message: 'Μήνυμα',
+    submit: 'Αποστολή',
+    sent: 'Ανοίξαμε το πρόγραμμα email σας με το μήνυμα έτοιμο. Πατήστε «Αποστολή» εκεί για να το στείλετε.',
+    subject: (x) => `Χονδρική: ${x}`,
+    required: 'Υποχρεωτικό',
+  },
+}
+
+const en = {
+  eyebrow: 'Wholesale',
+  title: 'Coffee solutions',
+  titleEm: 'for business.',
+  intro: 'From your own coffee under your own name to the office coffee and the equipment for your shop — find the solution that fits your business.',
+  jump: 'Sections',
+  ask: 'Ask about this',
+  sections: [
+    {
+      id: 'private-label',
+      kicker: 'Private Label',
+      title: 'Your coffee,',
+      titleEm: 'under your name.',
+      lead: 'We create coffee products under your brand. You choose the coffee, the packaging and the look — we roast and pack them with the same care we give our own coffees.',
+      cards: [
+        { icon: 'box', title: 'Packaging options', body: 'Different packaging types and sizes, depending on where and how your product will be sold.' },
+        { icon: 'tag', title: 'Product identity', body: 'Your name, logo and look on the pack, for a product that is truly yours.' },
+        { icon: 'beans', title: 'Available solutions', body: 'Choose from single origins and blends, for espresso, filter or Greek coffee.' },
+      ],
+      stepsTitle: 'How it works',
+      steps: ['Getting to know you and your needs', 'Choosing the coffee and packaging', 'Designing the product identity', 'Roasting, packing and delivery'],
+    },
+    {
+      id: 'greek-coffee',
+      kicker: 'Greek coffee',
+      title: 'Where it',
+      titleEm: 'all began.',
+      lead: 'Greek coffee has been the start of our story since 1997. We roast and grind it for the briki and supply it to businesses that want consistent quality in every cup.',
+      featuresTitle: 'Characteristics',
+      features: ['100% Arabica', 'Fine grind for the briki', 'Rich kaimaki', 'Consistent taste from batch to batch'],
+      cards: [
+        { icon: 'cup', title: 'For cafés and hospitality', body: 'Greek coffee for cafés, restaurants and hotels.' },
+        { icon: 'store', title: 'For retail', body: 'Packs for shops and points of sale.' },
+        { icon: 'tag', title: 'Under your own brand', body: 'Also available as private label, under your name.' },
+      ],
+    },
+    {
+      id: 'office',
+      kicker: 'Office Coffee Solutions',
+      title: 'Good coffee',
+      titleEm: 'in every office.',
+      lead: 'Solutions for offices and large companies, tailored to each partnership — from a small team to many workplaces.',
+      cards: [
+        { icon: 'truck', title: 'Coffee supply', body: 'Regular coffee supply, so you never run out.' },
+        { icon: 'box', title: 'Professional packaging', body: 'Packs suited to professional use and larger quantities.' },
+        { icon: 'machine', title: 'Equipment', body: 'Coffee machines and brewing equipment for your space.' },
+        { icon: 'support', title: 'Support', body: 'We are there for whatever you need throughout our partnership.' },
+      ],
+    },
+    {
+      id: 'professional',
+      kicker: 'Professional solutions',
+      title: 'Everything',
+      titleEm: 'your business needs.',
+      lead: 'Solutions for the rest of our products and services too, so you can easily find what you are looking for.',
+      cards: [
+        { icon: 'machine', title: 'Coffee machine rental', body: 'Rent coffee-making machines for your business, without the cost of buying.' },
+        { icon: 'grinder', title: 'Accessories', body: 'Rental and supply of coffee-making accessories.' },
+        { icon: 'chat', title: 'Something else?', body: 'Tell us what you need and we will find the solution together.', contact: true },
+      ],
+    },
+  ],
+  form: {
+    eyebrow: 'Contact',
+    title: 'Let’s talk',
+    titleEm: 'about working together.',
+    intro: 'Fill in the form and we will get back to you.',
+    name: 'Full name',
+    company: 'Company',
+    email: 'Email',
+    phone: 'Phone',
+    interest: 'I’m interested in',
+    message: 'Message',
+    submit: 'Send',
+    sent: 'Your email app has opened with the message ready. Press “Send” there to send it.',
+    subject: (x) => `Wholesale: ${x}`,
+    required: 'Required',
+  },
+}
+
+export const wholesaleContent = { el, en }
+
+// Where enquiries go. Placeholder until FUERTE confirms the address.
+export const wholesaleEmail = 'info@fuerte.gr'
