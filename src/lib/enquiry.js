@@ -6,6 +6,8 @@
 // replace it here, or set VITE_WEB3FORMS_KEY in the hosting environment.
 // Without a key the form falls back to opening the visitor's email app.
 
+import { countryName } from '../data/countries'
+
 const ENDPOINT = 'https://api.web3forms.com/submit'
 export const enquiryKey = import.meta.env.VITE_WEB3FORMS_KEY || 'fa4f30d9-d375-473f-92ca-14a1734c6f0f'
 
@@ -35,7 +37,9 @@ const businessLabel = (d) => (d.business === 'other' && d.businessOther?.trim() 
 // One readable sentence, a summary for quick scanning, then the visitor's message.
 export function composeEnquiry(d, topic) {
   const company = d.company?.trim()
-  const phone = d.phone?.trim()
+  // Country code + number, e.g. "+30 6912345678" (country name in the summary).
+  const phone = [d.phoneCode, d.phone?.trim()].filter(Boolean).join(' ')
+  const country = d.phoneCountry ? countryName(d.phoneCountry, 'el') : ''
 
   const sentence = [
     `Ο/Η πελάτης ${d.name.trim()}`,
@@ -52,7 +56,7 @@ export function composeEnquiry(d, topic) {
     ['Ονοματεπώνυμο', d.name.trim()],
     ['Επιχείρηση', company || '—'],
     ['Email', d.email.trim()],
-    ['Τηλέφωνο', phone || '—'],
+    ['Τηλέφωνο', phone ? `${phone}${country ? ` (${country})` : ''}` : '—'],
     ['Είδος επιχείρησης', businessLabel(d)],
     ['Εξοπλισμός', d.equipment === 'yes' ? 'Ναι, διαθέτει δικό του/της' : 'Όχι, χρειάζεται εξοπλισμό'],
     ['Μηνιαία κατανάλωση', d.consumption ? el.consumption[d.consumption] : '—'],
