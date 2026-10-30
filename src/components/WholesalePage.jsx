@@ -245,9 +245,9 @@ function EnquiryForm({ c, interest, setInterest }) {
         </div>
         <form onSubmit={submit} aria-busy={sending} className="ef-in grid gap-5 rounded-[2.5rem] border border-cream/10 bg-roast/80 p-6 backdrop-blur-md sm:grid-cols-2 md:p-10">
           <label className="block"><span className={label}>{f.name} *</span><input name="name" required autoComplete="name" className={field} /></label>
-          <label className="block"><span className={label}>{f.company}</span><input name="company" autoComplete="organization" className={field} /></label>
+          <label className="block"><span className={label}>{f.company} *</span><input name="company" required autoComplete="organization" className={field} /></label>
           <label className="block"><span className={label}>{f.email} *</span><input name="email" type="email" required autoComplete="email" className={field} /></label>
-          <label className="block"><span className={label}>{f.phone}</span><input name="phone" type="tel" autoComplete="tel" className={field} /></label>
+          <label className="block"><span className={label}>{f.phone} *</span><input name="phone" type="tel" required pattern="[+0-9 \(\)\-]{10,}" title={f.phoneHint} autoComplete="tel" className={field} /></label>
 
           <Select name="business" label={f.business} options={f.businessOptions} placeholder={f.choose} required value={business} onChange={(e) => setBusiness(e.target.value)} className="sm:col-span-2" />
           {business === 'other' && (
