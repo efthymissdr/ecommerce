@@ -36,8 +36,9 @@ function Canister() {
     [60, 190, 30], [82, 191, -20], [105, 189, 50], [128, 190, -45], [148, 188, 10],
     [72, 175, 0], [96, 174, -25], [120, 173, 35], [142, 172, -5],
   ]
+  // Extra room above (y from -40) so the outer lid is never cut off when it lifts and tilts.
   return (
-    <svg viewBox="0 0 210 270" className="w-full" role="img" aria-hidden="true">
+    <svg viewBox="0 -40 210 310" overflow="visible" className="w-full" role="img" aria-hidden="true">
       <defs>
         <linearGradient id="as-steel" x1="0" x2="1">
           <stop offset="0" stopColor="#2a211a" />
