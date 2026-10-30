@@ -1,14 +1,13 @@
 // Wholesale enquiry email, sent with Web3Forms (free plan, no backend needed).
 //
-// Setup: create an access key at https://web3forms.com with the inbox that should
-// receive the enquiries, then put it in `.env.local` (and in the hosting
-// provider's environment variables):
-//   VITE_WEB3FORMS_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-// The key only allows sending to that inbox, so it is safe in the browser.
+// The access key below sends to efthymis.sdr@gmail.com (the inbox it was created
+// with at https://web3forms.com). It only allows sending to that inbox, so it is
+// safe in the browser. To send elsewhere, create a new key with that inbox and
+// replace it here, or set VITE_WEB3FORMS_KEY in the hosting environment.
 // Without a key the form falls back to opening the visitor's email app.
 
 const ENDPOINT = 'https://api.web3forms.com/submit'
-export const enquiryKey = import.meta.env.VITE_WEB3FORMS_KEY || ''
+export const enquiryKey = import.meta.env.VITE_WEB3FORMS_KEY || 'fa4f30d9-d375-473f-92ca-14a1734c6f0f'
 
 // The email is always written in Greek, for the FUERTE team.
 const el = {
