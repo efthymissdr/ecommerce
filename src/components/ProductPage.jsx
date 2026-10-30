@@ -7,6 +7,8 @@ import { axes, localizedProducts, productOptions, priceFor } from '../data/conte
 import { Bag, Bean, Plus, Leaf, Truck, Flame, ArrowRight } from './Art'
 import { Eyebrow, Magnetic, Button, PhotoBg, flyToCart } from './ui'
 import { Radar, points } from './Quiz'
+import Airscape, { AirscapeBadge } from './Airscape'
+import { airscapeText } from '../data/airscape'
 import Carousel from './Carousel'
 
 const slideIds = [
@@ -185,7 +187,14 @@ function Buy({ product, onAdd, t }) {
           <li aria-current="page" className="text-cream/80">{product.name}</li>
         </ol>
       </nav>
-      <p className="pdp-in mt-8 text-xs font-semibold uppercase tracking-[0.3em] text-gold">{product.kicker}</p>
+      <div className="pdp-in mt-8 flex flex-wrap items-center gap-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">{product.kicker}</p>
+        {product.airscape && (
+          <a href="#airscape" className="transition-transform duration-300 hover:-translate-y-0.5">
+            <AirscapeBadge label={(airscapeText[t.code] || airscapeText.en).badge} />
+          </a>
+        )}
+      </div>
       <h1 className="pdp-in mt-3 font-display text-[clamp(3.2rem,7vw,6rem)] leading-[0.9] text-cream">{product.name}</h1>
       <div className="pdp-in mt-5 flex flex-wrap items-baseline gap-4">
         <p ref={priceEl} className="font-display text-4xl tabular-nums text-gold" aria-live="polite">{euro(total)}</p>
@@ -422,6 +431,7 @@ export default function ProductPage({ onAdd }) {
       </section>
       <Story product={product} d={d} />
       <Specs product={product} t={t} />
+      {product.airscape && <Airscape text={airscapeText[t.code] || airscapeText.en} />}
       <section className="py-24 md:py-32">
         <div className="mx-auto mb-12 max-w-7xl px-5 md:px-8">
           <Eyebrow>{d.galleryEyebrow}</Eyebrow>

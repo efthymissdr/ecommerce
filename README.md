@@ -37,6 +37,10 @@ Each coffee has a page at `/products/<id>` (for example `/products/classico`). T
 
 Sizes, prices, grinds and brewing methods are set up in `productOptions` and `priceFor` in `src/data/content.js`. They are placeholders until Shopify variants replace them. The site is a single-page app, so the host must serve `index.html` for every path (on Netlify, `/* /index.html 200`; on Vercel, a rewrite to `/index.html`).
 
+## Airscape®
+
+Coffees with `airscape: true` in `src/data/content.js` (currently Colombia, Ethiopia and Honduras) show an "Airscape secured" badge on their shop card and product page, and an Airscape section right after the characteristics. The section explains the canister and animates it with the scroll: the inner plunger lid presses down onto the beans, the air escapes through the valve and the outer lid closes. Text (EL and EN) is in `src/data/airscape.js`; the component is `src/components/Airscape.jsx`.
+
 ## Wholesale page
 
 `/wholesale` (Χονδρική in the menu) has four sections: Private Label, Greek coffee, Office Coffee Solutions, and Professional solutions (coffee machine and accessory rental). A sticky tab bar jumps between them and highlights the current section. Each section's "Ask about this" button scrolls to an enquiry form with that topic preselected. The form asks for the business type, existing equipment and monthly coffee consumption, then emails the enquiry through [Web3Forms](https://web3forms.com) (free, up to 250 emails a month, no server). The email starts with one sentence that sums up the customer ("Ο/Η πελάτης … της επιχείρησης … διατηρεί … καταναλώνει …"), then the customer's message and a short summary. "Reply" in the inbox answers the customer directly. The text is put together by `composeEnquiry` in `src/lib/enquiry.js`. The phone field has a searchable country code picker with flags (`src/components/PhoneField.jsx`, countries in `src/data/countries.js`, flag images from flag-icons, MIT); the email shows the number with its code and country.
