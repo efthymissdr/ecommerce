@@ -39,7 +39,7 @@ Sizes, prices, grinds and brewing methods are set up in `productOptions` and `pr
 
 ## Airscape®
 
-Coffees with `airscape: true` in `src/data/content.js` (currently Colombia, Ethiopia and Honduras) show an "Airscape secured" badge on their shop card and product page, and an Airscape section right after the characteristics. The section explains the canister and animates it with the scroll: the inner plunger lid presses down onto the beans, the air escapes through the valve and the outer lid closes. Text (EL and EN) is in `src/data/airscape.js`; the component is `src/components/Airscape.jsx`.
+Coffees with `airscape: true` in `src/data/content.js` (currently Colombia, Ethiopia and Honduras) are stored at FUERTE's premises in Airscape canisters until they are packed. They show an "Airscape secured" badge on their shop card and product page, and an Airscape section right after the characteristics. The section explains how the canisters keep the coffee fresh, shows the coffee's journey (roast, store in Airscape, pack, ship) and animates the canister with the scroll: the inner plunger lid presses down onto the beans, the air escapes through the valve and the outer lid closes. Text (EL and EN) is in `src/data/airscape.js`; the component is `src/components/Airscape.jsx`.
 
 ## Wholesale page
 

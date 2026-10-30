@@ -27,7 +27,7 @@ const icons = {
   down: <><path d="M12 4v12" /><path d="m7 11 5 5 5-5" /><path d="M5 20h14" /></>,
 }
 
-// Cut-away Airscape canister: as you scroll, the inner plunger lid presses down
+// Cut-away Airscape canister (as used at FUERTE's premises to store the coffee): as you scroll, the inner plunger lid presses down
 // onto the beans, the air escapes through the valve, and the outer lid closes.
 function Canister() {
   const beans = [
@@ -147,10 +147,11 @@ export default function Airscape({ text }) {
             ))}
           </ul>
 
-          <ol className="as-in mt-10 flex flex-col gap-3 sm:flex-row sm:gap-6">
+          <p className="as-in mt-10 text-xs font-semibold uppercase tracking-[0.25em] text-muted">{text.stepsTitle}</p>
+          <ol className="as-in mt-4 grid max-w-xl grid-cols-2 gap-3">
             {text.steps.map((s, i) => (
-              <li key={s} className="flex items-center gap-3 text-sm text-cream/80">
-                <span className="grid size-8 shrink-0 place-items-center rounded-full border border-gold/40 font-display text-lg text-gold">{i + 1}</span>
+              <li key={s} className={`flex items-center gap-3 rounded-2xl border p-3 text-sm ${i === 1 ? 'border-gold/50 bg-gold/10 text-gold' : 'border-cream/10 text-cream/80'}`}>
+                <span className={`grid size-8 shrink-0 place-items-center rounded-full font-display text-lg ${i === 1 ? 'bg-gold text-espresso' : 'border border-gold/40 text-gold'}`}>{i + 1}</span>
                 {s}
               </li>
             ))}
