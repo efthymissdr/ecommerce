@@ -29,7 +29,9 @@ Sizes, prices, grinds and brewing methods are set up in `productOptions` and `pr
 
 ## Wholesale page
 
-`/wholesale` (Χονδρική in the menu) has four sections: Private Label, Greek coffee, Office Coffee Solutions, and Professional solutions (coffee machine and accessory rental). A sticky tab bar jumps between them and highlights the current section. Each section's "Ask about this" button scrolls to an enquiry form with that topic preselected. The form opens the visitor's email app addressed to `wholesaleEmail` in `src/data/wholesale.js`; there is no server yet.
+`/wholesale` (Χονδρική in the menu) has four sections: Private Label, Greek coffee, Office Coffee Solutions, and Professional solutions (coffee machine and accessory rental). A sticky tab bar jumps between them and highlights the current section. Each section's "Ask about this" button scrolls to an enquiry form with that topic preselected. The form asks for the business type, existing equipment and monthly coffee consumption, then emails the enquiry through [Web3Forms](https://web3forms.com) (free, up to 250 emails a month, no server). The email starts with one sentence that sums up the customer ("Ο/Η πελάτης … της επιχείρησης … διατηρεί … καταναλώνει …"), then the customer's message and a short summary. "Reply" in the inbox answers the customer directly. The text is put together by `composeEnquiry` in `src/lib/enquiry.js`.
+
+To turn sending on, create an access key at web3forms.com using the inbox that should receive the enquiries, then set it as `VITE_WEB3FORMS_KEY` in `.env.local` for local work and in the hosting provider's environment variables for the live site. Emails go to the inbox the key was created with; to change it, create a new key. Without a key, the form opens the visitor's email app addressed to `wholesaleEmail` in `src/data/wholesale.js`, with the same text.
 
 All the page text (EL and EN) is in `src/data/wholesale.js`. To add a category, add an entry with the same `id` to `sections` in both languages, and it gets its own section, tab and form option.
 
