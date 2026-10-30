@@ -16,6 +16,16 @@ Direction comes from the `ui-ux-pro-max` skill (`.claude/skills/ui-ux-pro-max`):
 
 Hero → marquee → taste quiz → shop → our story → the craft → wholesale → footer. The navigation and footer links follow the same order (`linkIds` in `src/components/Nav.jsx`).
 
+## Shop filters
+
+The shop on the home page has three groups, each with its own filters (`shopGroups` in `src/data/content.js`):
+
+- **Coffee:** single origin, Greek, blend, microlot, filter, decaf
+- **Equipment:** coffee machines, grinders, cleaning, spare parts, scales, barista accessories
+- **Tea, cocoa & instant:** tea, cocoa, instant coffee
+
+A product has one `group` and any number of filter `tags`, so it can appear under several filters. Filters with no products yet show "Soon" and an empty state that links to contact (or, for equipment, to the professional solutions on the wholesale page). When Shopify is connected, map groups to collections and filters to product tags.
+
 ## Product pages
 
 Each coffee has a page at `/products/<id>` (for example `/products/classico`). The shop cards and the quiz result link to it. From top to bottom:

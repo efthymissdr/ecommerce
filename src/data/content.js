@@ -5,7 +5,15 @@ import { bestFor } from './quiz.js'
 // catalogue (Shopify) is connected. Descriptions are generated from the
 // characteristics below, so nothing is invented about the coffees.
 
-export const categoryIds = ['all', 'single', 'blend']
+// Shop groups and the filters inside each. A product belongs to one group and
+// can carry several filter tags (e.g. a single origin that is also a microlot).
+// TODO(shopify): map these to Shopify collections / product tags.
+export const shopGroups = [
+  { id: 'coffee', filters: ['all', 'single', 'greek', 'blend', 'microlot', 'filter', 'decaf'] },
+  { id: 'equipment', filters: ['all', 'machines', 'grinders', 'cleaning', 'parts', 'scales', 'barista'] },
+  { id: 'more', filters: ['all', 'tea', 'cocoa', 'instant'] },
+]
+export const inFilter = (p, group, filter) => p.group === group && (filter === 'all' || p.tags.includes(filter))
 
 // Order of the characteristics on the charts.
 export const axes = ['intensity', 'acidity', 'sweetness', 'body', 'fruity', 'chocolatey']
@@ -52,7 +60,7 @@ const words = {
     from: (c) => `Από ${words.el.fromAcc[c]}`,
     blendTitle: 'Ένα χαρμάνι της FUERTE',
     blend: 'Χαρμάνι',
-    kickerSingle: (c) => `Μονοποικιλιακός · ${words.el.countries[c]}`,
+    kickerSingle: (c) => `Μονής προέλευσης · ${words.el.countries[c]}`,
     kickerBlend: 'Χαρμάνι FUERTE',
     traits: { fruity: 'Φρουτώδεις νότες', chocolatey: 'Νότες σοκολάτας', sweetness: 'Γλυκύτητα', acidity: 'Ζωηρή οξύτητα', body: 'Γεμάτο σώμα', intensity: 'Ένταση', smooth: 'Απαλή γεύση', light: 'Ελαφρύ σώμα', balanced: 'Ισορροπημένη γεύση' },
     intensity: ['Ένα ήπιο', 'Ένα ήπιο', 'Ένα ισορροπημένο', 'Ένα πλούσιο', 'Ένα δυνατό'],
@@ -110,7 +118,7 @@ function describe(p, lang) {
 }
 
 // Catalogue merged with text in the active language (t.code is 'en' or 'el').
-export const localizedProducts = (t) => catalogue.map((p) => ({ ...p, ...describe(p, t.code) }))
+export const localizedProducts = (t) => catalogue.map((p) => ({ group: 'coffee', tags: [p.category], ...p, ...describe(p, t.code) }))
 
 // ---------- product page options (placeholders until Shopify variants exist) ----------
 
