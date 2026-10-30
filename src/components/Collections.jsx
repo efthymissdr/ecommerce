@@ -5,6 +5,8 @@ import { shopGroups, inFilter, localizedProducts } from '../data/content'
 import { useLang } from '../i18n'
 import { Bag, Plus, ArrowRight } from './Art'
 import { Eyebrow, flyToCart } from './ui'
+import { AirscapeBadge } from './Airscape'
+import { airscapeText } from '../data/airscape'
 
 function ProductCard({ p, onAdd }) {
   const { t } = useLang()
@@ -56,6 +58,7 @@ function ProductCard({ p, onAdd }) {
         <span className="absolute left-4 top-4 z-10 rounded-full bg-espresso/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-cream">
           {t.shop.categories[p.tags[0]]}
         </span>
+        {p.airscape && <AirscapeBadge label={(airscapeText[t.code] || airscapeText.en).badge} className="absolute bottom-4 left-4 z-10" />}
         <div className="pc-bag w-[58%] drop-shadow-[0_24px_24px_rgba(15,11,8,.35)]">
           <Bag product={p} />
         </div>
