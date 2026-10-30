@@ -79,8 +79,7 @@ The questions, answers and points come from the FUERTE scoring sheet and are in 
 
 1. Each answer gives every coffee its points from the sheet.
 2. The points from the five answers are added up per coffee. The coffee with the most points is the recommendation, and the next two are the alternatives.
-3. Match % = points ÷ 25 (the maximum, 5 questions × 5 points), shown as a percentage.
-4. On equal points, the coffee whose characteristics (from the product sheet) are closest to the visitor's answers wins.
+3. On equal points, the coffee whose characteristics (from the product sheet) are closest to the visitor's answers wins.
 
 To change the scoring, edit the numbers in `quiz.js`. The coffees' characteristics (intensity, acidity, sweetness, body, fruity, chocolatey) are in `src/data/content.js`. The product descriptions, tasting notes and "best for" brewing methods are generated from those numbers and from the quiz's question-1 points.
 
@@ -95,7 +94,7 @@ To change the scoring, edit the numbers in `quiz.js`. The coffees' characteristi
 | Shop | GSAP Flip filtering, 3D tilt cards with spotlight, bag lift on hover, add-to-cart bean that flies to the cart icon |
 | Story | Year counter, word-by-word text highlight on scroll, timeline drawn as you scroll, hover-reactive cards |
 | The craft | Pinned horizontal scroll with progress bar, roast curve drawn on scroll, pulsing rings |
-| Taste quiz | Six questions with animated options and a progress bar; the result shows a bean burst, a match ring, a bag flip and a radar chart comparing your taste with the recommended coffee; the alternatives swap in with a morph |
+| Taste quiz | Six questions with animated options and a progress bar; the result shows a bean burst, a bag flip and a radar chart comparing your taste with the recommended coffee; the alternatives swap in with a morph |
 | Wholesale / footer | Card that scales in on scroll, parallax cup, letter-by-letter wordmark |
 
 Brand facts (since 1997 as "BEST", 100% Arabica, a roast profile per blend) come from fuerte.gr's public description. The coffees and their characteristics come from the FUERTE product sheet. **Prices, pack colours, email and social links are placeholders** — replace them in `src/data/content.js`, `src/i18n/en.js`, `src/i18n/el.js` and `src/components/Footer.jsx` with the real catalogue.

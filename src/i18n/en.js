@@ -102,7 +102,6 @@ export default {
     questionOf: (i, n) => `Question ${i} of ${n}`,
     back: 'Back',
     resultEyebrow: 'Your match',
-    match: 'match',
     yourTaste: 'Your taste',
     why: 'Why we picked it',
     brewLine: (x) => `Fits how you brew: ${x.toLowerCase()}`,

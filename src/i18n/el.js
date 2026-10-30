@@ -102,7 +102,6 @@ export default {
     questionOf: (i, n) => `Ερώτηση ${i} από ${n}`,
     back: 'Πίσω',
     resultEyebrow: 'Η πρότασή μας',
-    match: 'ταίριασμα',
     yourTaste: 'Η γεύση σας',
     why: 'Γιατί τον επιλέξαμε',
     brewLine: (x) => `Ταιριάζει με τον τρόπο που τον φτιάχνετε: ${x.toLowerCase()}`,
