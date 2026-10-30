@@ -202,11 +202,8 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
           rotate: () => gsap.utils.random(-260, 260), scale: 0, duration: 1.4, ease: 'expo.out',
         }, 0.1)
         .to('.qz-burst', { autoAlpha: 0, duration: 0.6 }, 1.1)
-        .fromTo('.qz-ring', { strokeDashoffset: 302 }, { strokeDashoffset: 302 * (1 - shown.match / 100), duration: 1.6, ease: 'power3.out' }, 0.2)
         .from('.qz-alt', { y: 30, autoAlpha: 0, stagger: 0.1, duration: 0.8 }, 0.5)
         .from('.rd-dot', { scale: 0, transformOrigin: 'center', stagger: 0.06, duration: 0.5, ease: 'back.out(3)' }, 0.8)
-      const n = { v: 0 }
-      tl.to(n, { v: shown.match, duration: 1.6, ease: 'power3.out', onUpdate: () => { const c = root.current?.querySelector('.qz-count'); if (c) c.textContent = Math.round(n.v) } }, 0.2)
       gsap.delayedCall(0.25, () => { morph('.rd-user', 1.2, 'power3.out'); morph('.rd-product', 1.4) })
     }
   }, { scope: root, dependencies: [view, step, lang], revertOnUpdate: true })
@@ -219,8 +216,6 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
     gsap.to('.rd-product', { attr: { points: target }, duration: 1, ease: 'elastic.out(1, 0.6)' })
     gsap.fromTo('.qz-bag', { rotateY: 90 }, { rotateY: 0, duration: 0.8, ease: 'back.out(1.6)' })
     gsap.fromTo('.qz-swap', { y: 14, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.5, stagger: 0.05, ease: 'power3.out' })
-    gsap.fromTo('.qz-ring', { strokeDashoffset: 302 }, { strokeDashoffset: 302 * (1 - shown.match / 100), duration: 1, ease: 'power3.out' })
-    root.current.querySelector('.qz-count').textContent = shown.match
   }, { scope: root, dependencies: [pick] })
 
   const question = view === 'question' ? questions[step] : null
@@ -342,16 +337,6 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
                   <div className="min-w-0">
                     <p className="qz-res-in qz-swap text-xs font-semibold uppercase tracking-[0.2em] text-muted">{shown.product.kicker}</p>
                     <h3 className="qz-res-in qz-swap mt-2 font-display text-5xl leading-none text-cream md:text-6xl">{shown.product.name}</h3>
-                    <div className="qz-res-in mt-5 flex items-center gap-4">
-                      <svg viewBox="0 0 110 110" className="size-20 -rotate-90" aria-hidden="true">
-                        <circle cx="55" cy="55" r="48" fill="none" stroke="#f5efe6" strokeOpacity=".1" strokeWidth="7" />
-                        <circle className="qz-ring" cx="55" cy="55" r="48" fill="none" stroke="#c8a15a" strokeWidth="7" strokeLinecap="round" strokeDasharray="302" strokeDashoffset={302 * (1 - shown.match / 100)} />
-                      </svg>
-                      <p className="font-display text-cream">
-                        <span className="text-5xl tabular-nums"><span className="qz-count">{shown.match}</span>%</span>
-                        <span className="ml-2 text-sm uppercase tracking-[0.2em] text-muted">{q.match}</span>
-                      </p>
-                    </div>
                   </div>
                 </div>
 
@@ -407,7 +392,7 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
                       <span className="w-12 shrink-0 transition-transform duration-500 ease-expo group-hover:-rotate-6 group-hover:scale-110"><Bag product={o.product} /></span>
                       <span className="min-w-0">
                         <span className="block truncate font-display text-xl text-cream">{o.product.name}</span>
-                        <span className="text-xs tabular-nums text-gold">{o.match}% {q.match}</span>
+                        <span className="block truncate text-xs text-gold">{o.product.kicker}</span>
                       </span>
                     </button>
                   ))}

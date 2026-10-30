@@ -16,6 +16,16 @@ Direction comes from the `ui-ux-pro-max` skill (`.claude/skills/ui-ux-pro-max`):
 
 Hero → marquee → taste quiz → shop → our story → the craft → wholesale → footer. The navigation and footer links follow the same order (`linkIds` in `src/components/Nav.jsx`).
 
+## Shop filters
+
+The shop on the home page has three groups, each with its own filters (`shopGroups` in `src/data/content.js`):
+
+- **Coffee:** single origin, Greek, blend, microlot, filter, decaf
+- **Equipment:** coffee machines, grinders, cleaning, spare parts, scales, barista accessories
+- **Tea, cocoa & instant:** tea, cocoa, instant coffee
+
+A product has one `group` and any number of filter `tags`, so it can appear under several filters. Filters with no products yet show "Soon" and an empty state that links to contact (or, for equipment, to the professional solutions on the wholesale page). When Shopify is connected, map groups to collections and filters to product tags.
+
 ## Product pages
 
 Each coffee has a page at `/products/<id>` (for example `/products/classico`). The shop cards and the quiz result link to it. From top to bottom:
@@ -29,7 +39,9 @@ Sizes, prices, grinds and brewing methods are set up in `productOptions` and `pr
 
 ## Wholesale page
 
-`/wholesale` (Χονδρική in the menu) has four sections: Private Label, Greek coffee, Office Coffee Solutions, and Professional solutions (coffee machine and accessory rental). A sticky tab bar jumps between them and highlights the current section. Each section's "Ask about this" button scrolls to an enquiry form with that topic preselected. The form opens the visitor's email app addressed to `wholesaleEmail` in `src/data/wholesale.js`; there is no server yet.
+`/wholesale` (Χονδρική in the menu) has four sections: Private Label, Greek coffee, Office Coffee Solutions, and Professional solutions (coffee machine and accessory rental). A sticky tab bar jumps between them and highlights the current section. Each section's "Ask about this" button scrolls to an enquiry form with that topic preselected. The form asks for the business type, existing equipment and monthly coffee consumption, then emails the enquiry through [Web3Forms](https://web3forms.com) (free, up to 250 emails a month, no server). The email starts with one sentence that sums up the customer ("Ο/Η πελάτης … της επιχείρησης … διατηρεί … καταναλώνει …"), then the customer's message and a short summary. "Reply" in the inbox answers the customer directly. The text is put together by `composeEnquiry` in `src/lib/enquiry.js`. The phone field has a searchable country code picker with flags (`src/components/PhoneField.jsx`, countries in `src/data/countries.js`, flag images from flag-icons, MIT); the email shows the number with its code and country.
+
+Enquiries currently go to efthymis.sdr@gmail.com, the inbox the access key in `src/lib/enquiry.js` was created with. To send them elsewhere, create a new key at web3forms.com with that inbox and replace it there (or set `VITE_WEB3FORMS_KEY` in the hosting environment, which takes priority). Without a key, the form opens the visitor's email app addressed to `wholesaleEmail` in `src/data/wholesale.js`, with the same text.
 
 All the page text (EL and EN) is in `src/data/wholesale.js`. To add a category, add an entry with the same `id` to `sections` in both languages, and it gets its own section, tab and form option.
 
@@ -67,8 +79,7 @@ The questions, answers and points come from the FUERTE scoring sheet and are in 
 
 1. Each answer gives every coffee its points from the sheet.
 2. The points from the five answers are added up per coffee. The coffee with the most points is the recommendation, and the next two are the alternatives.
-3. Match % = points ÷ 25 (the maximum, 5 questions × 5 points), shown as a percentage.
-4. On equal points, the coffee whose characteristics (from the product sheet) are closest to the visitor's answers wins.
+3. On equal points, the coffee whose characteristics (from the product sheet) are closest to the visitor's answers wins.
 
 To change the scoring, edit the numbers in `quiz.js`. The coffees' characteristics (intensity, acidity, sweetness, body, fruity, chocolatey) are in `src/data/content.js`. The product descriptions, tasting notes and "best for" brewing methods are generated from those numbers and from the quiz's question-1 points.
 
@@ -83,7 +94,7 @@ To change the scoring, edit the numbers in `quiz.js`. The coffees' characteristi
 | Shop | GSAP Flip filtering, 3D tilt cards with spotlight, bag lift on hover, add-to-cart bean that flies to the cart icon |
 | Story | Year counter, word-by-word text highlight on scroll, timeline drawn as you scroll, hover-reactive cards |
 | The craft | Pinned horizontal scroll with progress bar, roast curve drawn on scroll, pulsing rings |
-| Taste quiz | Six questions with animated options and a progress bar; the result shows a bean burst, a match ring, a bag flip and a radar chart comparing your taste with the recommended coffee; the alternatives swap in with a morph |
+| Taste quiz | Six questions with animated options and a progress bar; the result shows a bean burst, a bag flip and a radar chart comparing your taste with the recommended coffee; the alternatives swap in with a morph |
 | Wholesale / footer | Card that scales in on scroll, parallax cup, letter-by-letter wordmark |
 
 Brand facts (since 1997 as "BEST", 100% Arabica, a roast profile per blend) come from fuerte.gr's public description. The coffees and their characteristics come from the FUERTE product sheet. **Prices, pack colours, email and social links are placeholders** — replace them in `src/data/content.js`, `src/i18n/en.js`, `src/i18n/el.js` and `src/components/Footer.jsx` with the real catalogue.

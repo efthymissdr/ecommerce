@@ -4,6 +4,8 @@ import { useLang } from '../i18n'
 import { wholesaleContent, wholesaleEmail } from '../data/wholesale'
 import { Bag, ArrowRight, Check2 } from './Art'
 import { Eyebrow, Magnetic, Button, PhotoBg } from './ui'
+import { composeEnquiry, sendEnquiry, enquiryKey } from '../lib/enquiry'
+import PhoneField from './PhoneField'
 
 /* ---------- icons ---------- */
 
@@ -161,12 +163,34 @@ function Section({ s, index, c, onAsk, flip }) {
   )
 }
 
-/* ---------- enquiry form (opens the visitor's email app; no backend yet) ---------- */
+/* ---------- enquiry form (emailed with Web3Forms, see src/lib/enquiry.js) ---------- */
+
+function Select({ name, label, options, placeholder, required, value, onChange, className = '' }) {
+  return (
+    <label className={`block ${className}`}>
+      <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">{label}{required && ' *'}</span>
+      <span className="relative mt-2 block">
+        <select
+          name={name}
+          required={required}
+          {...(onChange ? { value, onChange } : { defaultValue: '' })}
+          className="peer block w-full cursor-pointer appearance-none rounded-2xl border border-cream/15 bg-espresso/50 py-3 pl-4 pr-11 text-cream transition-colors has-[option[value='']:checked]:text-muted hover:border-cream/30 focus:border-gold focus:outline-none"
+        >
+          {placeholder && <option value="" disabled={required} className="bg-roast">{placeholder}</option>}
+          {options.map(([id, text]) => <option key={id} value={id} className="bg-roast text-cream">{text}</option>)}
+        </select>
+        <ArrowRight className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 rotate-90 text-gold transition-transform duration-300 peer-focus:-rotate-90" />
+      </span>
+    </label>
+  )
+}
 
 function EnquiryForm({ c, interest, setInterest }) {
   const f = c.form
   const ref = useRef(null)
-  const [sent, setSent] = useState(false)
+  const [business, setBusiness] = useState('')
+  // idle | sending | done | error | mailto (no key configured)
+  const [status, setStatus] = useState('idle')
 
   useGSAP(() => {
     const mm = gsap.matchMedia()
@@ -175,17 +199,40 @@ function EnquiryForm({ c, interest, setInterest }) {
     })
   }, { scope: ref })
 
-  const submit = (e) => {
+  // Reveal the "describe your business" field when "Other" is picked.
+  useGSAP(() => {
+    if (business === 'other') gsap.from('.ef-other', { height: 0, autoAlpha: 0, duration: 0.5, ease: 'power3.out', clearProps: 'height' })
+  }, { scope: ref, dependencies: [business] })
+
+  useGSAP(() => {
+    if (status === 'done' || status === 'error') gsap.from('.ef-status', { y: 12, autoAlpha: 0, duration: 0.5, ease: 'back.out(2)' })
+  }, { scope: ref, dependencies: [status] })
+
+  const submit = async (e) => {
     e.preventDefault()
-    const d = Object.fromEntries(new FormData(e.currentTarget))
+    const form = e.currentTarget
+    const d = Object.fromEntries(new FormData(form))
     const topic = c.sections.find((s) => s.id === d.interest)?.kicker || ''
-    const body = [`${f.name}: ${d.name}`, `${f.company}: ${d.company}`, `${f.email}: ${d.email}`, `${f.phone}: ${d.phone}`, `${f.interest}: ${topic}`, '', d.message].join('\n')
-    window.location.href = `mailto:${wholesaleEmail}?subject=${encodeURIComponent(f.subject(topic))}&body=${encodeURIComponent(body)}`
-    setSent(true)
+    if (!enquiryKey) {
+      const { subject, body } = composeEnquiry(d, topic)
+      window.location.href = `mailto:${wholesaleEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      setStatus('mailto')
+      return
+    }
+    setStatus('sending')
+    try {
+      await sendEnquiry(d, topic)
+      form.reset()
+      setBusiness('')
+      setStatus('done')
+    } catch {
+      setStatus('error')
+    }
   }
 
   const field = 'mt-2 block w-full rounded-2xl border border-cream/15 bg-espresso/50 px-4 py-3 text-cream placeholder:text-muted transition-colors focus:border-gold focus:outline-none'
   const label = 'text-xs font-semibold uppercase tracking-[0.2em] text-muted'
+  const sending = status === 'sending'
 
   return (
     <section id="enquiry" ref={ref} className="relative isolate scroll-mt-40 border-t border-cream/10">
@@ -197,21 +244,35 @@ function EnquiryForm({ c, interest, setInterest }) {
           <p className="ef-in mt-6 max-w-md text-lg text-cream/70">{f.intro}</p>
           <a href={`mailto:${wholesaleEmail}`} className="ef-in mt-8 inline-block text-gold underline-offset-4 hover:underline">{wholesaleEmail}</a>
         </div>
-        <form onSubmit={submit} className="ef-in grid gap-5 rounded-[2.5rem] border border-cream/10 bg-roast/80 p-6 backdrop-blur-md sm:grid-cols-2 md:p-10">
+        <form onSubmit={submit} aria-busy={sending} className="ef-in grid gap-5 rounded-[2.5rem] border border-cream/10 bg-roast/80 p-6 backdrop-blur-md sm:grid-cols-2 md:p-10">
           <label className="block"><span className={label}>{f.name} *</span><input name="name" required autoComplete="name" className={field} /></label>
-          <label className="block"><span className={label}>{f.company}</span><input name="company" autoComplete="organization" className={field} /></label>
+          <label className="block"><span className={label}>{f.company} *</span><input name="company" required autoComplete="organization" className={field} /></label>
           <label className="block"><span className={label}>{f.email} *</span><input name="email" type="email" required autoComplete="email" className={field} /></label>
-          <label className="block"><span className={label}>{f.phone}</span><input name="phone" type="tel" autoComplete="tel" className={field} /></label>
-          <label className="block sm:col-span-2">
-            <span className={label}>{f.interest}</span>
-            <select name="interest" value={interest} onChange={(e) => setInterest(e.target.value)} className={`${field} appearance-none`}>
-              {c.sections.map((s) => <option key={s.id} value={s.id} className="bg-roast">{s.kicker}</option>)}
-            </select>
-          </label>
+          <PhoneField label={f.phone} hint={f.phoneHint} codeLabel={f.phoneCode} searchLabel={f.phoneSearch} noMatch={f.phoneNoMatch} lang={c === wholesaleContent.el ? 'el' : 'en'} />
+
+          <Select name="business" label={f.business} options={f.businessOptions} placeholder={f.choose} required value={business} onChange={(e) => setBusiness(e.target.value)} className="sm:col-span-2" />
+          {business === 'other' && (
+            <label className="ef-other block overflow-hidden sm:col-span-2"><span className={label}>{f.businessOther} *</span><input name="businessOther" required className={field} /></label>
+          )}
+          <Select name="equipment" label={f.equipment} options={f.equipmentOptions} placeholder={f.choose} required className="sm:col-span-2" />
+          <Select name="consumption" label={f.consumption} options={f.consumptionOptions} placeholder={f.choose} className="sm:col-span-2" />
+          <Select name="interest" label={f.interest} options={c.sections.map((s) => [s.id, s.kicker])} value={interest} onChange={(e) => setInterest(e.target.value)} className="sm:col-span-2" />
+
           <label className="block sm:col-span-2"><span className={label}>{f.message}</span><textarea name="message" rows="4" className={`${field} resize-y`} /></label>
+          {/* Honeypot for spam bots; hidden from people and screen readers. */}
+          <input type="text" name="botcheck" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
           <div className="flex flex-wrap items-center gap-4 sm:col-span-2">
-            <Button as="button" type="submit">{f.submit} <ArrowRight className="size-4" /></Button>
-            {sent && <p role="status" className="max-w-sm text-sm text-gold">{f.sent}</p>}
+            <Button as="button" type="submit" disabled={sending} className="disabled:cursor-wait disabled:opacity-70">
+              {sending ? f.sending : f.submit}
+              {sending
+                ? <span className="size-4 animate-spin rounded-full border-2 border-espresso/30 border-t-espresso" aria-hidden="true" />
+                : <ArrowRight className="size-4" />}
+            </Button>
+            <div role="status" aria-live="polite" className="max-w-sm text-sm">
+              {status === 'done' && <p className="ef-status flex items-start gap-2 text-gold"><Check2 className="mt-0.5 size-4 shrink-0" />{f.done}</p>}
+              {status === 'error' && <p className="ef-status text-[#f08a7e]">{f.error} <a href={`mailto:${wholesaleEmail}`} className="underline underline-offset-4">{wholesaleEmail}</a></p>}
+              {status === 'mailto' && <p className="text-gold">{f.sent}</p>}
+            </div>
           </div>
         </form>
       </div>
