@@ -1,5 +1,5 @@
-import { useRef } from 'react'
-import { gsap, useGSAP, FULL } from '../lib/gsap'
+import { useRef, useState } from 'react'
+import { gsap, useGSAP, ScrollTrigger, FULL } from '../lib/gsap'
 import { useLang } from '../i18n'
 import { Bean } from './Art'
 import { Eyebrow } from './ui'
@@ -45,11 +45,44 @@ function StepArt({ i, labels }) {
   )
 }
 
+// Background photo for each step (FUERTE's own photos): green beans, the
+// cooling tray, the roaster's controls, the portafilter.
+const stepPhotos = ['craft-1', 'craft-2', 'craft-3', 'craft-4']
+
+// One full-screen layer per step; only the active one is visible. Portrait
+// photos: on wider screens the sharp photo sits in a centre band that fades
+// into a blurred copy, so it is not zoomed in too far.
+function Backdrop({ active }) {
+  const src = (name) => ({
+    src: `/img/${name}-1333.webp`,
+    srcSet: `/img/${name}-800.webp 800w, /img/${name}-1333.webp 1333w`,
+    sizes: '100vw',
+    alt: '',
+    loading: 'lazy',
+    decoding: 'async',
+  })
+  return (
+    // overflow-clip (not hidden) so the sticky frame works on phones.
+    <div className="pointer-events-none absolute inset-0 overflow-clip" aria-hidden="true">
+      <div className="sticky top-0 h-svh w-full lg:static lg:h-full">
+        {stepPhotos.map((name, i) => (
+          <div key={name} className={`absolute inset-0 transition-[opacity,transform] duration-[1200ms] ease-out ${i === active ? 'scale-100 opacity-100' : 'scale-[1.06] opacity-0'}`}>
+            <img {...src(name)} className="absolute inset-0 hidden size-full scale-110 object-cover blur-2xl md:block" />
+            <img {...src(name)} className="relative mx-auto block h-full w-full object-cover md:w-[72%] md:[mask-image:linear-gradient(90deg,transparent,#000_14%,#000_86%,transparent)]" />
+          </div>
+        ))}
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(23,17,12,.9),rgba(23,17,12,.7)_45%,rgba(23,17,12,.8))]" />
+      </div>
+    </div>
+  )
+}
+
 export default function Process() {
   const { t } = useLang()
   const c = t.craft
   const root = useRef(null)
   const track = useRef(null)
+  const [active, setActive] = useState(0)
 
   useGSAP(() => {
     const mm = gsap.matchMedia()
@@ -68,7 +101,9 @@ export default function Process() {
         },
       })
       gsap.to('.pr-progress', { scaleX: 1, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top top', end: () => `+=${distance()}`, scrub: true } })
-      gsap.utils.toArray('.step').forEach((s) => {
+      gsap.utils.toArray('.step').forEach((s, i) => {
+        // Swap the background when this card reaches the middle of the screen.
+        ScrollTrigger.create({ trigger: s, containerAnimation: tween, start: 'left 55%', end: 'right 55%', onToggle: (self) => self.isActive && setActive(i) })
         gsap.from(s.querySelectorAll('.step-in'), {
           y: 60, autoAlpha: 0, stagger: 0.08, ease: 'power2.out',
           scrollTrigger: { trigger: s, containerAnimation: tween, start: 'left 85%', end: 'left 45%', scrub: true },
@@ -84,7 +119,8 @@ export default function Process() {
       })
     })
     mm.add(`${FULL} and (max-width: 1023px)`, () => {
-      gsap.utils.toArray('.step').forEach((s) => {
+      gsap.utils.toArray('.step').forEach((s, i) => {
+        ScrollTrigger.create({ trigger: s, start: 'top 55%', end: 'bottom 55%', onToggle: (self) => self.isActive && setActive(i) })
         gsap.from(s.querySelectorAll('.step-in'), { y: 40, autoAlpha: 0, duration: 0.9, stagger: 0.08, ease: 'expo.out', scrollTrigger: { trigger: s, start: 'top 80%' } })
       })
     })
@@ -96,11 +132,12 @@ export default function Process() {
   }, { scope: root })
 
   return (
-    <section id="craft" ref={root} className="relative overflow-hidden bg-espresso lg:h-svh">
+    <section id="craft" ref={root} className="relative overflow-clip bg-espresso lg:h-svh">
+      <Backdrop active={active} />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-cream/5">
         <div className="pr-progress h-full origin-left scale-x-0 bg-gold" />
       </div>
-      <div ref={track} className="flex h-full flex-col lg:w-max lg:flex-row">
+      <div ref={track} className="relative flex h-full flex-col lg:w-max lg:flex-row">
         <div className="flex shrink-0 flex-col justify-center px-5 pt-24 pb-10 md:px-8 lg:w-[42vw] lg:py-0 lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))]">
           <Eyebrow>{c.eyebrow}</Eyebrow>
           <h2 className="mt-6 font-display text-[clamp(3rem,6vw,5.5rem)] leading-[0.92] text-cream">
