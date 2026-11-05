@@ -49,9 +49,9 @@ function StepArt({ i, labels }) {
 // cooling tray, the roaster's controls, the portafilter.
 const stepPhotos = ['craft-1', 'craft-2', 'craft-3', 'craft-4']
 
-// One full-screen layer per step; only the active one is visible. Portrait
-// photos: on wider screens the sharp photo sits in a centre band that fades
-// into a blurred copy, so it is not zoomed in too far.
+// One full-screen layer per step; only the active one is visible. The portrait
+// photos sit in a sharp band that fades into a blurred copy of themselves, so
+// they are not zoomed in too far.
 function Backdrop({ active }) {
   const src = (name) => ({
     src: `/img/${name}-1333.webp`,
@@ -67,8 +67,9 @@ function Backdrop({ active }) {
       <div className="sticky top-0 h-svh w-full lg:static lg:h-full">
         {stepPhotos.map((name, i) => (
           <div key={name} className={`absolute inset-0 transition-[opacity,transform] duration-[1200ms] ease-out ${i === active ? 'scale-100 opacity-100' : 'scale-[1.06] opacity-0'}`}>
-            <img {...src(name)} className="absolute inset-0 hidden size-full scale-110 object-cover blur-2xl md:block" />
-            <img {...src(name)} className="relative mx-auto block h-full w-full object-cover md:w-[72%] md:[mask-image:linear-gradient(90deg,transparent,#000_14%,#000_86%,transparent)]" />
+            <img {...src(name)} className="absolute inset-0 size-full scale-110 object-cover blur-2xl" />
+            {/* Zoomed out: phones get a shorter band (fading top and bottom), wider screens a narrower one (fading left and right). */}
+            <img {...src(name)} className="absolute inset-x-0 top-[10%] mx-auto block h-[80%] w-full object-cover [mask-image:linear-gradient(180deg,transparent,#000_12%,#000_88%,transparent)] md:inset-y-0 md:top-0 md:h-full md:w-[56%] md:[mask-image:linear-gradient(90deg,transparent,#000_16%,#000_84%,transparent)]" />
           </div>
         ))}
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(23,17,12,.9),rgba(23,17,12,.7)_45%,rgba(23,17,12,.8))]" />
@@ -88,6 +89,16 @@ export default function Process() {
     const mm = gsap.matchMedia()
     mm.add(`${FULL} and (min-width: 1024px)`, () => {
       const distance = () => track.current.scrollWidth - window.innerWidth
+      // The section stays pinned a little longer than the horizontal travel, so
+      // the last card can be read before the page moves on.
+      const hold = () => window.innerHeight * 0.6
+      ScrollTrigger.create({
+        trigger: root.current,
+        start: 'top top',
+        end: () => `+=${distance() + hold()}`,
+        pin: true,
+        invalidateOnRefresh: true,
+      })
       const tween = gsap.to(track.current, {
         x: () => -distance(),
         ease: 'none',
@@ -95,7 +106,6 @@ export default function Process() {
           trigger: root.current,
           start: 'top top',
           end: () => `+=${distance()}`,
-          pin: true,
           scrub: 0.8,
           invalidateOnRefresh: true,
         },
