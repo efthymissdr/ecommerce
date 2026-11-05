@@ -227,7 +227,10 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
       <PhotoBg
         name="espresso"
         widths={[800, 1333]}
-        position="center 75%"
+        sticky
+        narrow
+        position="center 85%"
+        mobilePosition="25% center"
         blur={1}
         overlay="linear-gradient(180deg, rgba(23,17,12,.88) 0%, rgba(36,27,20,.62) 45%, rgba(23,17,12,.9) 100%)"
       />

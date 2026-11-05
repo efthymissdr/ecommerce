@@ -49,7 +49,10 @@ export default function Story() {
       <PhotoBg
         name="team"
         widths={[800, 1333]}
-        position="center 15%"
+        sticky
+        narrow
+        position="center 30%"
+        mobilePosition="68% 20%"
         overlay="linear-gradient(180deg, rgba(23,17,12,.85) 0%, rgba(30,23,17,.7) 35%, rgba(30,23,17,.8) 70%, rgba(23,17,12,.95) 100%)"
       />
       <div className="relative mx-auto max-w-7xl px-5 py-28 md:px-8 md:py-40">
