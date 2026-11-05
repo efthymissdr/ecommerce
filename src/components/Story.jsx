@@ -45,11 +45,15 @@ export default function Story() {
 
   return (
     <section id="story" ref={root} className="relative isolate">
+      {/* The FUERTE team on the green coffee sacks; no blur so the faces stay sharp. */}
       <PhotoBg
-        name="sacks"
-        widths={[900]}
-        blur={1.5}
-        overlay="linear-gradient(180deg, rgba(23,17,12,.92) 0%, rgba(30,23,17,.78) 35%, rgba(30,23,17,.8) 70%, rgba(23,17,12,.95) 100%)"
+        name="team"
+        widths={[800, 1333]}
+        sticky
+        narrow
+        position="center 30%"
+        mobilePosition="68% 20%"
+        overlay="linear-gradient(180deg, rgba(23,17,12,.85) 0%, rgba(30,23,17,.7) 35%, rgba(30,23,17,.8) 70%, rgba(23,17,12,.95) 100%)"
       />
       <div className="relative mx-auto max-w-7xl px-5 py-28 md:px-8 md:py-40">
       <div className="grid gap-16 lg:grid-cols-[1fr_1.4fr]">

@@ -85,9 +85,16 @@ export function flyToCart(fromEl) {
 
 // Full-bleed background photo with a tint overlay and a slow scroll parallax.
 // The parent section needs `relative isolate`; content after it needs `relative`.
-export function PhotoBg({ name, widths, overlay, position = 'center', blur = 0, eager = false }) {
+// `portrait` = { name, widths }: a taller crop used on phones instead.
+// `sticky`: for tall sections. The photo fills the screen and stays put while
+// the section scrolls over it, instead of being stretched (and so zoomed in)
+// over the section's whole height. `mobilePosition` frames it on phones.
+// `narrow` (with sticky, for portrait photos): on wider screens the sharp photo
+// sits in a centre band that fades into a blurred copy, so less of it is cropped.
+export function PhotoBg({ name, widths, overlay, position = 'center', mobilePosition, blur = 0, eager = false, portrait, sticky = false, narrow = false }) {
   const ref = useRef(null)
   useGSAP(() => {
+    if (sticky) return
     const mm = gsap.matchMedia()
     mm.add(FULL, () => {
       gsap.fromTo(ref.current.querySelector('img'), { yPercent: -6 }, {
@@ -97,8 +104,9 @@ export function PhotoBg({ name, widths, overlay, position = 'center', blur = 0, 
     })
   }, { scope: ref })
   const largest = widths[widths.length - 1]
-  return (
-    <div ref={ref} className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+  const img = (className = '') => (
+    <picture className={className}>
+      {portrait && <source media="(max-width: 767px)" sizes="100vw" srcSet={portrait.widths.map((w) => `/img/${portrait.name}-${w}.webp ${w}w`).join(', ')} />}
       <img
         src={`/img/${name}-${largest}.webp`}
         srcSet={widths.map((w) => `/img/${name}-${w}.webp ${w}w`).join(', ')}
@@ -107,9 +115,23 @@ export function PhotoBg({ name, widths, overlay, position = 'center', blur = 0, 
         loading={eager ? 'eager' : 'lazy'}
         fetchPriority={eager ? 'high' : 'auto'}
         decoding="async"
-        className="absolute inset-x-0 -top-[8%] h-[116%] w-full scale-105 object-cover"
-        style={{ objectPosition: position, filter: blur ? `blur(${blur}px)` : undefined }}
+        className={`object-cover [object-position:var(--pos-m)] md:[object-position:var(--pos)] ${sticky ? 'size-full' : 'absolute inset-x-0 -top-[8%] h-[116%] w-full scale-105'}`}
+        style={{ '--pos': position, '--pos-m': mobilePosition || position, filter: blur ? `blur(${blur}px)` : undefined }}
       />
+    </picture>
+  )
+  return (
+    // overflow-clip (not hidden) so the sticky frame inside still sticks.
+    <div ref={ref} className="pointer-events-none absolute inset-0 -z-10 overflow-clip" aria-hidden="true">
+      {!sticky ? img() : (
+        <div className="sticky top-0 h-svh w-full">
+          {narrow && (
+            // Blurred fill behind the band (wider screens only).
+            <div className="absolute inset-0 hidden scale-110 blur-2xl md:block">{img('block size-full')}</div>
+          )}
+          {img(`relative mx-auto block h-full ${narrow ? 'md:w-[72%] md:[mask-image:linear-gradient(90deg,transparent,#000_14%,#000_86%,transparent)]' : 'w-full'}`)}
+        </div>
+      )}
       <div className="absolute inset-0" style={{ background: overlay }} />
     </div>
   )

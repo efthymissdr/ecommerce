@@ -63,10 +63,11 @@ export default function Hero({ ready }) {
   return (
     <section id="top" ref={root} className="relative isolate flex min-h-svh items-center overflow-hidden pt-28 pb-16">
       <PhotoBg
-        name="beans"
-        widths={[960, 1920]}
+        name="tubs"
+        widths={[960, 1500]}
+        portrait={{ name: 'tubs-portrait', widths: [600, 1000] }}
         eager
-        position="center 40%"
+        position="center"
         overlay="linear-gradient(90deg, rgba(23,17,12,.9) 0%, rgba(23,17,12,.72) 45%, rgba(23,17,12,.45) 100%), linear-gradient(180deg, rgba(23,17,12,.35) 0%, transparent 30%, transparent 75%, rgba(23,17,12,.9) 100%)"
       />
       <div className="hero-glow pointer-events-none absolute -top-40 left-1/2 h-[80vh] w-[80vw] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(200,161,90,.28),transparent)] blur-2xl" />
