@@ -225,9 +225,10 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
   return (
     <section id="quiz" ref={root} className="relative isolate scroll-mt-24">
       <PhotoBg
-        name="cups"
-        widths={[900]}
-        blur={2}
+        name="espresso"
+        widths={[800, 1333]}
+        position="center 75%"
+        blur={1}
         overlay="linear-gradient(180deg, rgba(23,17,12,.88) 0%, rgba(36,27,20,.62) 45%, rgba(23,17,12,.9) 100%)"
       />
       <div className="relative mx-auto max-w-7xl px-5 py-28 md:px-8 md:py-36">
