@@ -85,7 +85,8 @@ export function flyToCart(fromEl) {
 
 // Full-bleed background photo with a tint overlay and a slow scroll parallax.
 // The parent section needs `relative isolate`; content after it needs `relative`.
-export function PhotoBg({ name, widths, overlay, position = 'center', blur = 0, eager = false }) {
+// `portrait` = { name, widths }: a taller crop used on phones instead.
+export function PhotoBg({ name, widths, overlay, position = 'center', blur = 0, eager = false, portrait }) {
   const ref = useRef(null)
   useGSAP(() => {
     const mm = gsap.matchMedia()
@@ -99,17 +100,20 @@ export function PhotoBg({ name, widths, overlay, position = 'center', blur = 0, 
   const largest = widths[widths.length - 1]
   return (
     <div ref={ref} className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
-      <img
-        src={`/img/${name}-${largest}.webp`}
-        srcSet={widths.map((w) => `/img/${name}-${w}.webp ${w}w`).join(', ')}
-        sizes="100vw"
-        alt=""
-        loading={eager ? 'eager' : 'lazy'}
-        fetchPriority={eager ? 'high' : 'auto'}
-        decoding="async"
-        className="absolute inset-x-0 -top-[8%] h-[116%] w-full scale-105 object-cover"
-        style={{ objectPosition: position, filter: blur ? `blur(${blur}px)` : undefined }}
-      />
+      <picture>
+        {portrait && <source media="(max-width: 767px)" sizes="100vw" srcSet={portrait.widths.map((w) => `/img/${portrait.name}-${w}.webp ${w}w`).join(', ')} />}
+        <img
+          src={`/img/${name}-${largest}.webp`}
+          srcSet={widths.map((w) => `/img/${name}-${w}.webp ${w}w`).join(', ')}
+          sizes="100vw"
+          alt=""
+          loading={eager ? 'eager' : 'lazy'}
+          fetchPriority={eager ? 'high' : 'auto'}
+          decoding="async"
+          className="absolute inset-x-0 -top-[8%] h-[116%] w-full scale-105 object-cover"
+          style={{ objectPosition: position, filter: blur ? `blur(${blur}px)` : undefined }}
+        />
+      </picture>
       <div className="absolute inset-0" style={{ background: overlay }} />
     </div>
   )
