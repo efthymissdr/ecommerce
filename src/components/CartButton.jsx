@@ -5,7 +5,14 @@ import { gsap, useGSAP } from '../lib/gsap'
 // three beans drop into a cup, the cup fills with espresso and crema, steam
 // rises, then "Added ✓" shows for a moment before the label comes back.
 // Clicking again while it plays adds again and restarts the animation.
-export default function CartButton({ onAdd, children, addedLabel, className = '' }) {
+// `variant`: "gold" (product page, quiz) or "dark" (the smaller shop-card button).
+const variants = {
+  gold: { button: 'min-h-12 bg-gold px-7 py-3 text-espresso hover:bg-crema', cup: 'h-10', liquid: '#4a2a14' },
+  dark: { button: 'min-h-11 min-w-[8.5rem] bg-espresso px-4 text-cream hover:bg-gold-deep', cup: 'h-8', liquid: '#8a5530' },
+}
+
+export default function CartButton({ onAdd, children, addedLabel, variant = 'gold', className = '', ...rest }) {
+  const v = variants[variant]
   const ref = useRef(null)
   const tl = useRef(null)
   const [status, setStatus] = useState('')
@@ -51,7 +58,8 @@ export default function CartButton({ onAdd, children, addedLabel, className = ''
       ref={ref}
       type="button"
       onClick={click}
-      className={`relative inline-flex min-h-12 items-center justify-center overflow-hidden rounded-full bg-gold px-7 py-3 text-sm font-semibold tracking-wide text-espresso transition-colors duration-300 hover:bg-crema active:scale-[0.98] ${className}`}
+      className={`relative inline-flex items-center justify-center overflow-hidden rounded-full text-sm font-semibold tracking-wide transition-colors duration-300 active:scale-[0.98] ${v.button} ${className}`}
+      {...rest}
     >
       <span className="cb-label inline-flex items-center gap-3">{children}</span>
       <span className="cb-done absolute inset-0 flex items-center justify-center gap-2" aria-hidden="true">
@@ -59,7 +67,7 @@ export default function CartButton({ onAdd, children, addedLabel, className = ''
         {addedLabel}
       </span>
       <span className="cb-anim pointer-events-none absolute inset-0 grid place-items-center" aria-hidden="true">
-        <svg viewBox="0 0 56 44" className="h-10 overflow-visible">
+        <svg viewBox="0 0 56 44" className={`${v.cup} overflow-visible`}>
           <defs>
             <clipPath id={clip}><path d="M17 15H39V24C39 30.5 34.5 35 28 35C21.5 35 17 30.5 17 24Z" /></clipPath>
           </defs>
@@ -73,7 +81,7 @@ export default function CartButton({ onAdd, children, addedLabel, className = ''
           <g className="cb-cup">
             {/* espresso + crema inside the cup */}
             <g clipPath={`url(#${clip})`}>
-              <rect className="cb-liquid" x="15" y="37" width="26" height="22" fill="#4a2a14" />
+              <rect className="cb-liquid" x="15" y="37" width="26" height="22" fill={v.liquid} />
               <ellipse className="cb-foam" cx="28" cy="19.5" rx="12" ry="2.6" fill="#e9c98f" />
             </g>
             <path d="M16 14H40V24C40 31 35 36 28 36C21 36 16 31 16 24Z" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
