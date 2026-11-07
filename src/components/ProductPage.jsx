@@ -350,7 +350,9 @@ function Specs({ product, t }) {
     gsap.to('.rd-product', { attr: { points: target }, duration: 1.4, ease: 'elastic.out(1, 0.6)', scrollTrigger: { trigger: '.sp-radar', start: 'top 80%' } })
     gsap.fromTo('.sp-bar', { scaleX: 0 }, { scaleX: (i, el) => el.dataset.v, duration: 1.2, stagger: 0.08, ease: 'expo.out', scrollTrigger: { trigger: '.sp-bars', start: 'top 85%' } })
     gsap.fromTo('.sp-roast span', { scaleY: 0 }, { scaleY: 1, transformOrigin: 'bottom', duration: 0.6, stagger: 0.08, ease: 'back.out(2)', scrollTrigger: { trigger: '.sp-roast', start: 'top 90%' } })
-  }, { scope: ref, dependencies: [product.id] })
+    // Rebuilt when the values change too: the page first shows the built-in values and
+    // the Shopify ones arrive a moment later, so the bars and chart must follow them.
+  }, { scope: ref, dependencies: [product.id, axes.map((a) => product.profile[a]).join()], revertOnUpdate: true })
 
   // Only the facts this coffee has (origin always; estate/lot and grade when known).
   const facts = ['origin', 'lot', 'grade'].filter((f) => product.facts[f])
