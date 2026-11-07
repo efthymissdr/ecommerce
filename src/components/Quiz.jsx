@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { gsap, useGSAP, FULL } from '../lib/gsap'
 import { useLang } from '../i18n'
 import { axes, localizedProducts } from '../data/content'
+import { useProducts, useCatalogSource } from '../shopify/catalog'
 import { questions, recommend } from '../data/quiz'
 import { Bag, Bean, ArrowRight } from './Art'
 import CartButton from './CartButton'
@@ -109,7 +110,12 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
   const q = t.quiz
   const root = useRef(null)
   const busy = useRef(false)
-  const products = localizedProducts(t)
+  // Coffees with a taste profile that the store sells; if none match the store
+  // (yet), the quiz still runs on the designed catalogue and links to the coffee.
+  const live = useProducts()
+  const source = useCatalogSource()
+  const sold = live.filter((p) => p.profile)
+  const products = sold.length ? sold : localizedProducts(t)
   const n = questions.length
   const { step, answers, pick } = quiz
   const view = step < 0 ? 'intro' : step < n ? 'question' : 'result'
@@ -355,9 +361,11 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
                   </ul>
                 </div>
                 <div className="qz-res-in mt-8 flex flex-wrap items-center gap-3">
-                  <CartButton onAdd={addToCart} addedLabel={q.added}>
-                    {q.add} · €{shown.product.price.toFixed(2)}
-                  </CartButton>
+                  {(source !== 'shopify' || shown.product.shopify) && (
+                    <CartButton onAdd={addToCart} addedLabel={q.added}>
+                      {q.add} · €{shown.product.price.toFixed(2)}
+                    </CartButton>
+                  )}
                   <Button as={Link} to={`/products/${shown.product.id}`} variant="ghost">
                     {t.pdp.view} <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </Button>

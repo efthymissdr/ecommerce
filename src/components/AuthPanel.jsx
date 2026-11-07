@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { shopText } from '../shopify/text'
 import { Link } from 'react-router'
 import { gsap, useGSAP } from '../lib/gsap'
 import { useLang } from '../i18n'
@@ -165,6 +166,24 @@ function RegisterForm({ p, onSwitch, onDone }) {
 
 /* ---------- signed-in summary ---------- */
 
+// Shopify customer accounts: login and sign-up both happen on Shopify's page
+// (email + one-time code), so the panel just explains it and sends them there.
+function ShopifyLogin({ mode }) {
+  const { t } = useLang()
+  const c = shopText[t.code] || shopText.en
+  const { login, register } = useAuth()
+  const [going, setGoing] = useState(false)
+  const go = () => { setGoing(true); (mode === 'register' ? register : login)().catch((e) => { console.error(e); setGoing(false) }) }
+  return (
+    <div>
+      <p className="text-sm leading-relaxed text-cream/70">{c.loginIntro}</p>
+      <button type="button" onClick={go} disabled={going} className="mt-6 inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-gold text-base font-semibold text-espresso transition-colors hover:bg-crema disabled:cursor-wait disabled:opacity-70">
+        {going ? c.loginRedirect : c.loginButton}
+      </button>
+    </div>
+  )
+}
+
 function SignedIn({ p, onClose }) {
   const { customer, points, logout } = useAuth()
   const { t } = useLang()
@@ -197,7 +216,7 @@ export default function AuthPanel() {
   const { t } = useLang()
   const tx = accountText[t.code]
   const p = tx.panel
-  const { panel, closePanel, openPanel, customer } = useAuth()
+  const { panel, closePanel, openPanel, customer, mode: authMode } = useAuth()
   const root = useRef(null)
   const lastFocus = useRef(null)
   const [mounted, setMounted] = useState(false)
@@ -316,17 +335,21 @@ export default function AuthPanel() {
                 </ul>
               )}
               <div className="mt-8" key={mode}>
-                {mode === 'login'
-                  ? <LoginForm p={p} onSwitch={() => openPanel('register')} onDone={closePanel} />
-                  : <RegisterForm p={p} onSwitch={() => openPanel('login')} onDone={closePanel} />}
+                {authMode === 'shopify'
+                  ? <ShopifyLogin mode={mode} />
+                  : mode === 'login'
+                    ? <LoginForm p={p} onSwitch={() => openPanel('register')} onDone={closePanel} />
+                    : <RegisterForm p={p} onSwitch={() => openPanel('login')} onDone={closePanel} />}
               </div>
               </div>
             </>
           )}
         </div>
-        <p className="flex items-start gap-2 border-t border-cream/10 px-6 py-4 text-xs leading-relaxed text-muted md:px-8">
-          <User className="mt-0.5 size-4 shrink-0" /> {tx.demo}
-        </p>
+        {authMode === 'demo' && (
+          <p className="flex items-start gap-2 border-t border-cream/10 px-6 py-4 text-xs leading-relaxed text-muted md:px-8">
+            <User className="mt-0.5 size-4 shrink-0" /> {tx.demo}
+          </p>
+        )}
       </aside>
     </div>
   )

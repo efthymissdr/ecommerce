@@ -4,6 +4,7 @@ import { gsap, useGSAP, ScrollTrigger } from '../lib/gsap'
 import { useLang, languages } from '../i18n'
 import { Bag2, Menu, Close, User } from './Art'
 import { useAuth } from '../account/AuthContext'
+import { useCart } from '../shopify/cart'
 
 // Links to a home-page section ("#shop") that also work from other pages,
 // or to a separate page ("/wholesale").
@@ -57,6 +58,7 @@ function LangSwitch({ onChange }) {
 export default function Nav({ cartCount, bump, onLang }) {
   const { t } = useLang()
   const { customer, openPanel } = useAuth()
+  const { openCart } = useCart()
   const root = useRef(null)
   const [open, setOpen] = useState(false)
 
@@ -118,10 +120,10 @@ export default function Nav({ cartCount, bump, onLang }) {
               {t.nav.account}
             </span>
           </button>
-          <SectionLink hash="#shop" className="cart-btn relative grid size-10 md:size-11 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10" aria-label={t.nav.cart(cartCount)}>
+          <button type="button" onClick={openCart} aria-haspopup="dialog" className="cart-btn relative grid size-10 md:size-11 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10" aria-label={t.nav.cart(cartCount)}>
             <Bag2 />
             <span className="cart-badge absolute right-1 top-1 grid size-4.5 place-items-center rounded-full bg-gold text-[10px] font-bold text-espresso">{cartCount}</span>
-          </SectionLink>
+          </button>
           <button
             className="grid size-10 place-items-center rounded-full text-cream transition-colors hover:bg-cream/10 md:size-11 xl:hidden"
             onClick={() => setOpen((o) => !o)}

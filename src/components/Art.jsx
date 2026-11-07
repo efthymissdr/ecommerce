@@ -11,7 +11,16 @@ export function Bean({ className = '', color = 'currentColor', crease = '#0f0b08
 }
 
 export function Bag({ product, className = '' }) {
-  const { bag, ink, name, kicker, weight, roast, photo } = product
+  const { bag, ink, name, kicker, weight, roast, photo, image } = product
+  // A Shopify product photo (no designed pack): shown whole in the same box.
+  if (!photo && image) {
+    const src = (w) => `${image}${image.includes('?') ? '&' : '?'}width=${w}`
+    return (
+      <span className={`block aspect-[220/300] ${className}`}>
+        <img src={src(600)} srcSet={`${src(200)} 200w, ${src(600)} 600w`} sizes="auto, (max-width: 640px) 45vw, 22vw" loading="lazy" decoding="async" alt={name} className="size-full rounded-2xl object-contain" draggable="false" />
+      </span>
+    )
+  }
   // Real pack photo (transparent background) when there is one, in the same
   // 220×300 box as the drawing so every layout and animation stays the same.
   if (photo) {
