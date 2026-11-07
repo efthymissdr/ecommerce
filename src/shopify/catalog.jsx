@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { useLang } from '../i18n'
-import { localizedProducts, shopGroups } from '../data/content'
+import { localizedProducts, shopGroups, axes, redescribe } from '../data/content'
 import { shopify } from './config'
 import { fetchProducts } from './storefront'
 
@@ -54,6 +54,16 @@ function filtersFor(s) {
 
 const money = (m) => Number(m?.amount ?? 0)
 
+// Taste characteristics (1–5) from the product's custom.* metafields; only the ones filled in.
+function tasteOf(s) {
+  const out = {}
+  for (const m of s.taste || []) {
+    const v = Number(m?.value)
+    if (m && axes.includes(m.key) && v >= 1 && v <= 5) out[m.key] = Math.round(v)
+  }
+  return out
+}
+
 // What every product carries from Shopify, matched or not.
 function shopifyPart(s) {
   const variants = s.variants.nodes.map((v) => ({
@@ -73,6 +83,7 @@ function shopifyPart(s) {
 // A Shopify product without designed data: shown with its own title, photo and text.
 function standalone(s) {
   const filters = filtersFor(s)
+  const taste = tasteOf(s)
   const sentences = s.description.split(/(?<=[.!;])\s+/)
   return {
     id: s.handle,
@@ -90,12 +101,13 @@ function standalone(s) {
     ink: '#f5efe6',
     weight: '',
     image: s.featuredImage?.url,
+    ...(Object.keys(taste).length === axes.length && { profile: taste, roast: taste.intensity }),
     ...shopifyPart(s),
   }
 }
 
 // Attach Shopify data to the designed coffees, then add the remaining Shopify products.
-export function mergeCatalogue(local, remote) {
+export function mergeCatalogue(local, remote, lang) {
   const left = [...remote]
   const take = (test) => { const i = left.findIndex(test); return i < 0 ? null : left.splice(i, 1)[0] }
   const merged = []
@@ -107,7 +119,10 @@ export function mergeCatalogue(local, remote) {
     })
     if (!s) continue
     // Keep the curated name, story and pack art; prices, options and stock come from Shopify.
-    merged.push({ ...p, ...shopifyPart(s), image: p.photo ? undefined : s.featuredImage?.url })
+    // Characteristics filled in Shopify win over the built-in ones, and the text follows them.
+    const taste = tasteOf(s)
+    const withTaste = Object.keys(taste).length ? redescribe({ ...p, profile: { ...p.profile, ...taste } }, lang) : p
+    merged.push({ ...withTaste, ...shopifyPart(s), image: p.photo ? undefined : s.featuredImage?.url })
   }
   return [...merged, ...left.map(standalone)]
 }
@@ -140,7 +155,7 @@ export function useProducts() {
   const { remote, source } = useContext(CatalogContext)
   return useMemo(() => {
     const local = localizedProducts(t)
-    return source === 'shopify' ? mergeCatalogue(local, remote) : local
+    return source === 'shopify' ? mergeCatalogue(local, remote, t.code) : local
   }, [t, remote, source])
 }
 

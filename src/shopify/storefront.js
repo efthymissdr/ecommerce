@@ -30,6 +30,10 @@ query Products($lang: LanguageCode, $country: CountryCode, $cursor: String) @inC
       images(first: 6) { nodes { url altText } }
       options { name values }
       priceRange { minVariantPrice { amount currencyCode } }
+      taste: metafields(identifiers: [
+        { namespace: "custom", key: "intensity" }, { namespace: "custom", key: "acidity" }, { namespace: "custom", key: "sweetness" },
+        { namespace: "custom", key: "body" }, { namespace: "custom", key: "fruity" }, { namespace: "custom", key: "chocolatey" }
+      ]) { key value }
       variants(first: 100) {
         nodes { id title availableForSale price { amount currencyCode } selectedOptions { name value } image { url } }
       }

@@ -120,6 +120,9 @@ function describe(p, lang) {
 }
 
 // Catalogue merged with text in the active language (t.code is 'en' or 'el').
+// Recompute the generated text for a coffee whose profile changed (e.g. from Shopify metafields).
+export const redescribe = (p, lang) => ({ ...p, ...describe(p, lang) })
+
 export const localizedProducts = (t) => catalogue.map((p) => ({ group: 'coffee', tags: [p.category], ...p, ...describe(p, t.code) }))
 
 // ---------- product page options (placeholders until Shopify variants exist) ----------
