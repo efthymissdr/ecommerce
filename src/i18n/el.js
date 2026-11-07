@@ -58,6 +58,7 @@ export default {
     roast: 'Ένταση',
     roastAria: (n) => `Ένταση ${n} από 5`,
     add: 'Προσθήκη',
+    added: 'Προστέθηκε',
     addAria: (name) => `Προσθήκη του ${name} στο καλάθι`,
   },
   story: {

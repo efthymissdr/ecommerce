@@ -5,6 +5,7 @@ import { shopGroups, inFilter, localizedProducts } from '../data/content'
 import { useLang } from '../i18n'
 import { Bag, Plus, ArrowRight } from './Art'
 import { Eyebrow, flyToCart } from './ui'
+import CartButton from './CartButton'
 import { AirscapeBadge } from './Airscape'
 import { airscapeText } from '../data/airscape'
 
@@ -83,13 +84,9 @@ function ProductCard({ p, onAdd }) {
               ))}
             </span>
           </div>
-          <button
-            onClick={add}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-espresso px-4 text-sm font-semibold text-cream transition-all duration-300 hover:gap-3 hover:bg-gold-deep active:scale-95"
-            aria-label={t.shop.addAria(p.name)}
-          >
+          <CartButton variant="dark" onAdd={add} addedLabel={t.shop.added} aria-label={t.shop.addAria(p.name)}>
             <Plus className="size-4" /> {t.shop.add}
-          </button>
+          </CartButton>
         </div>
       </div>
     </article>

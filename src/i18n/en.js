@@ -58,6 +58,7 @@ export default {
     roast: 'Intensity',
     roastAria: (n) => `Intensity ${n} of 5`,
     add: 'Add',
+    added: 'Added',
     addAria: (name) => `Add ${name} to cart`,
   },
   story: {

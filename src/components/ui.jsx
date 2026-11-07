@@ -14,19 +14,25 @@ export function SplitWords({ text, className = '', wordClass = '' }) {
   )
 }
 
-// Button that is pulled towards the pointer.
-export function Magnetic({ children, strength = 0.35, className = '' }) {
+// Button that is pulled towards the pointer. The pull is measured from the
+// button's resting place and capped to a few pixels, without an elastic
+// overshoot, so neighbouring buttons never swing into each other.
+export function Magnetic({ children, strength = 0.35, max = 8, className = '' }) {
   const ref = useRef(null)
   useGSAP(() => {
     const el = ref.current
     const mm = gsap.matchMedia()
     mm.add(`${FULL} and (pointer: fine)`, () => {
-      const xTo = gsap.quickTo(el, 'x', { duration: 0.6, ease: 'elastic.out(1, 0.4)' })
-      const yTo = gsap.quickTo(el, 'y', { duration: 0.6, ease: 'elastic.out(1, 0.4)' })
+      const xTo = gsap.quickTo(el, 'x', { duration: 0.5, ease: 'power3.out' })
+      const yTo = gsap.quickTo(el, 'y', { duration: 0.5, ease: 'power3.out' })
+      const clamp = gsap.utils.clamp(-max, max)
       const move = (e) => {
         const r = el.getBoundingClientRect()
-        xTo((e.clientX - (r.left + r.width / 2)) * strength)
-        yTo((e.clientY - (r.top + r.height / 2)) * strength)
+        // Remove the current offset to get the resting centre.
+        const cx = r.left - gsap.getProperty(el, 'x') + r.width / 2
+        const cy = r.top - gsap.getProperty(el, 'y') + r.height / 2
+        xTo(clamp((e.clientX - cx) * strength))
+        yTo(clamp((e.clientY - cy) * strength) * 0.6)
       }
       const leave = () => { xTo(0); yTo(0) }
       el.addEventListener('pointermove', move)
