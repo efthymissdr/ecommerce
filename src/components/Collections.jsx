@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { gsap, useGSAP, Flip, FULL } from '../lib/gsap'
-import { shopGroups, inFilter, localizedProducts } from '../data/content'
+import { shopGroups, inFilter } from '../data/content'
+import { useProducts } from '../shopify/catalog'
 import { useLang } from '../i18n'
 import { Bag, Plus, ArrowRight } from './Art'
 import { Eyebrow, flyToCart } from './ui'
+import { shopText } from '../shopify/text'
 import CartButton from './CartButton'
 import { AirscapeBadge } from './Airscape'
 import { airscapeText } from '../data/airscape'
@@ -56,9 +58,11 @@ function ProductCard({ p, onAdd }) {
       {/* Image duplicates the title link, so it is hidden from keyboard and screen readers. */}
       <Link to={`/products/${p.id}`} tabIndex={-1} aria-hidden="true" className="relative grid aspect-[4/4.2] place-items-center overflow-hidden rounded-3xl" style={{ background: `radial-gradient(circle at 50% 60%, ${p.bag}33, transparent 70%), #efe7da` }}>
         {/* z-10 keeps the tag above the pack, which lifts on hover. */}
-        <span className="absolute left-4 top-4 z-10 rounded-full bg-espresso/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-cream">
-          {t.shop.categories[p.tags[0]]}
-        </span>
+        {t.shop.categories[p.tags[0]] && (
+          <span className="absolute left-4 top-4 z-10 rounded-full bg-espresso/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-cream">
+            {t.shop.categories[p.tags[0]]}
+          </span>
+        )}
         {p.airscape && <AirscapeBadge label={(airscapeText[t.code] || airscapeText.en).badge} className="absolute bottom-4 left-4 z-10" />}
         <div className="pc-bag w-[58%] drop-shadow-[0_24px_24px_rgba(15,11,8,.35)]">
           <Bag product={p} />
@@ -76,15 +80,16 @@ function ProductCard({ p, onAdd }) {
           ))}
         </ul>
         <div className="mt-auto flex items-center justify-between pt-6">
-          <div className="flex items-center gap-2 text-xs text-stone" aria-label={t.shop.roastAria(p.roast)}>
+          {/* Intensity only for coffees with a taste profile; sold-out Shopify products say so. */}
+          {p.roast ? <div className="flex items-center gap-2 text-xs text-stone" aria-label={t.shop.roastAria(p.roast)}>
             {t.shop.roast}
             <span className="flex gap-1">
               {Array.from({ length: 5 }).map((_, i) => (
                 <span key={i} className={`h-1.5 w-4 rounded-full ${i < p.roast ? 'bg-espresso' : 'bg-espresso/15'}`} />
               ))}
             </span>
-          </div>
-          <CartButton variant="dark" onAdd={add} addedLabel={t.shop.added} aria-label={t.shop.addAria(p.name)}>
+          </div> : <span className="text-xs text-stone">{p.available === false ? (shopText[t.code] || shopText.en).soldOut : ''}</span>}
+          <CartButton variant="dark" onAdd={add} addedLabel={t.shop.added} aria-label={t.shop.addAria(p.name)} disabled={p.available === false} className="disabled:cursor-not-allowed disabled:opacity-40">
             <Plus className="size-4" /> {t.shop.add}
           </CartButton>
         </div>
@@ -105,7 +110,7 @@ const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matc
 export default function Collections({ onAdd }) {
   const { t } = useLang()
   const s = t.shop
-  const products = localizedProducts(t)
+  const products = useProducts()
   const root = useRef(null)
   // `tab` updates instantly (buttons + pill); `sel` drives the grid once leaving cards have faded out.
   const [tab, setTab] = useState({ group: 'coffee', filter: 'all' })

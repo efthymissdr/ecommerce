@@ -5,7 +5,8 @@ import { useLang } from '../i18n'
 import { useAuth } from '../account/AuthContext'
 import { accountText } from '../account/text'
 import { pointsRules } from '../account/service'
-import { localizedProducts } from '../data/content'
+import { shopText } from '../shopify/text'
+import { useProducts } from '../shopify/catalog'
 import { Bag, ArrowRight, Plus, Check2, Close, Truck } from './Art'
 import { Eyebrow, Button, PhotoBg, flyToCart } from './ui'
 import { Field } from './AuthPanel'
@@ -15,15 +16,26 @@ const tabIds = ['overview', 'orders', 'addresses', 'points']
 function useFormat(code) {
   const locale = code === 'el' ? 'el-GR' : 'en-GB'
   return useMemo(() => ({
+    code,
     money: (v) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(v),
     date: (d) => new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(d)),
     month: (d) => new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(new Date(d)),
-  }), [locale])
+  }), [locale, code])
 }
 
 const orderTotals = (o) => {
   const subtotal = o.items.reduce((s, i) => s + i.price * i.qty, 0)
-  return { subtotal, total: subtotal + o.shipping }
+  // Shopify orders carry their real total (discounts, taxes); demo orders are summed.
+  return { subtotal, total: o.total ?? subtotal + o.shipping }
+}
+
+// The catalogue product for an order line (demo id, or the Shopify product it came from).
+const productOf = (products, i) => products.find((x) => x.id === i.productId || (i.shopifyProductId && x.shopify?.id === i.shopifyProductId))
+
+// Pack art, or the Shopify line photo for products without designed art.
+function ItemArt({ p, i }) {
+  if (p) return <Bag product={p} />
+  return i.image ? <img src={`${i.image}${i.image.includes('?') ? '&' : '?'}width=120`} alt="" className="aspect-square w-full rounded-lg object-cover" /> : null
 }
 
 const statusStyle = {
@@ -44,8 +56,9 @@ function OrderCard({ o, a, f, products, addresses, onAdd, open, onToggle, grindL
   const [done, setDone] = useState(false)
   const { subtotal, total } = orderTotals(o)
   const count = o.items.reduce((s, i) => s + i.qty, 0)
-  const addr = addresses.find((x) => x.id === o.addressId)
-  const earned = o.status === 'cancelled' ? 0 : Math.floor(subtotal * pointsRules.perEuro)
+  const addr = o.address || addresses.find((x) => x.id === o.addressId)
+  // Points are a demo feature until a loyalty app is connected.
+  const earned = o.status === 'cancelled' || o.statusPageUrl ? 0 : Math.floor(subtotal * pointsRules.perEuro)
 
   useGSAP(() => {
     const body = ref.current.querySelector('.oc-body')
@@ -55,7 +68,12 @@ function OrderCard({ o, a, f, products, addresses, onAdd, open, onToggle, grindL
   }, { scope: ref, dependencies: [open] })
 
   const reorder = (e) => {
-    o.items.forEach((i) => { const p = products.find((x) => x.id === i.productId); if (p) for (let k = 0; k < i.qty; k++) onAdd(p, { size: i.size, grind: i.grind, roast: 'roasted', qty: 1 }) })
+    o.items.forEach((i) => {
+      const p = productOf(products, i)
+      // Shopify lines re-add the exact variant; demo lines their options.
+      if (i.variantId) onAdd(p || { id: i.variantId, name: i.title, price: i.price }, { variantId: i.variantId, qty: i.qty })
+      else if (p) for (let k = 0; k < i.qty; k++) onAdd(p, { size: i.size, grind: i.grind, roast: 'roasted', qty: 1 })
+    })
     flyToCart(e.currentTarget)
     setDone(true); setTimeout(() => setDone(false), 2000)
   }
@@ -64,7 +82,7 @@ function OrderCard({ o, a, f, products, addresses, onAdd, open, onToggle, grindL
     <article ref={ref} className="ac-in overflow-hidden rounded-3xl border border-cream/10 bg-roast/70">
       <button onClick={onToggle} aria-expanded={open} className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-x-4 gap-y-2 p-5 text-left transition-colors hover:bg-cream/[0.03] md:grid-cols-[auto_1fr_auto_auto_auto] md:p-6">
         <div className="flex -space-x-3" aria-hidden="true">
-          {o.items.slice(0, 3).map((i) => { const p = products.find((x) => x.id === i.productId); return p && <span key={i.productId} className="w-9 drop-shadow-[0_6px_6px_rgba(0,0,0,.4)]"><Bag product={p} /></span> })}
+          {o.items.slice(0, 3).map((i, k) => <span key={k} className="w-9 drop-shadow-[0_6px_6px_rgba(0,0,0,.4)]"><ItemArt p={productOf(products, i)} i={i} /></span>)}
         </div>
         <div className="hidden md:block">
           <p className="font-display text-xl text-cream">{a.order} #{o.id}</p>
@@ -80,14 +98,17 @@ function OrderCard({ o, a, f, products, addresses, onAdd, open, onToggle, grindL
         <div className="oc-body overflow-hidden border-t border-cream/10">
           <div className="grid gap-6 p-5 md:grid-cols-[1.4fr_1fr] md:p-6">
             <ul className="min-w-0 space-y-3">
-              {o.items.map((i) => {
-                const p = products.find((x) => x.id === i.productId)
-                return p && (
-                  <li key={i.productId} className="flex items-center gap-4 rounded-2xl bg-espresso/40 p-3">
-                    <Link to={`/products/${p.id}`} className="w-11 shrink-0"><Bag product={p} /></Link>
+              {o.items.map((i, k) => {
+                const p = productOf(products, i)
+                if (!p && !i.title) return null
+                const name = p?.name || i.title
+                const detail = i.variantId ? [i.variantTitle, `×${i.qty}`].filter(Boolean).join(' · ') : `${i.size} · ${grindLabel(i.grind)} · ×${i.qty}`
+                return (
+                  <li key={k} className="flex items-center gap-4 rounded-2xl bg-espresso/40 p-3">
+                    {p ? <Link to={`/products/${p.id}`} className="w-11 shrink-0"><ItemArt p={p} i={i} /></Link> : <span className="w-11 shrink-0"><ItemArt i={i} /></span>}
                     <div className="min-w-0 flex-1">
-                      <Link to={`/products/${p.id}`} className="block truncate font-display text-lg text-cream hover:text-gold">{p.name}</Link>
-                      <p className="text-xs text-muted">{i.size} · {grindLabel(i.grind)} · ×{i.qty}</p>
+                      {p ? <Link to={`/products/${p.id}`} className="block truncate font-display text-lg text-cream hover:text-gold">{name}</Link> : <p className="truncate font-display text-lg text-cream">{name}</p>}
+                      <p className="text-xs text-muted">{detail}</p>
                     </div>
                     <p className="text-sm tabular-nums text-cream">{f.money(i.price * i.qty)}</p>
                   </li>
@@ -96,7 +117,8 @@ function OrderCard({ o, a, f, products, addresses, onAdd, open, onToggle, grindL
             </ul>
             <div className="space-y-4 text-sm">
               {addr && <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">{a.shipTo}</p><p className="mt-1 text-cream/80">{addr.name}<br />{addr.street}, {addr.zip} {addr.city}</p></div>}
-              <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">{a.payment}</p><p className="mt-1 text-cream/80">{o.payment}</p></div>
+              {o.payment && <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">{a.payment}</p><p className="mt-1 text-cream/80">{o.payment}</p></div>}
+              {o.statusPageUrl && <a href={o.statusPageUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-gold underline-offset-4 hover:underline">{a.track} <ArrowRight className="size-4" /></a>}
               <dl className="space-y-1.5 border-t border-cream/10 pt-4">
                 <div className="flex justify-between text-cream/70"><dt>{a.subtotal}</dt><dd className="tabular-nums">{f.money(subtotal)}</dd></div>
                 <div className="flex justify-between text-cream/70"><dt>{a.shipping}</dt><dd className="tabular-nums">{o.shipping ? f.money(o.shipping) : a.free}</dd></div>
@@ -141,7 +163,8 @@ function Orders({ customer, a, f, products, onAdd, grindLabel }) {
 
 const blank = { label: '', name: '', street: '', floor: '', city: '', zip: '', phone: '' }
 
-function AddressForm({ initial, a, p, onSave, onCancel }) {
+// Shopify addresses have no label, so the field is hidden for Shopify accounts.
+function AddressForm({ initial, a, p, onSave, onCancel, noLabel = false }) {
   const [v, setV] = useState({ ...blank, ...initial })
   const [err, setErr] = useState({})
   const set = (k, val) => { setV((s) => ({ ...s, [k]: val })); setErr((e) => ({ ...e, [k]: undefined })) }
@@ -157,7 +180,7 @@ function AddressForm({ initial, a, p, onSave, onCancel }) {
   const F = (k, auto, cls = '') => <Field label={a.fields[k]} name={k} value={v[k]} onChange={set} error={err[k]} autoComplete={auto} className={cls} />
   return (
     <form onSubmit={submit} noValidate className="ac-in grid gap-4 rounded-3xl border border-gold/30 bg-roast/80 p-5 sm:grid-cols-2 md:p-6">
-      {F('label', 'off', 'sm:col-span-2')}
+      {!noLabel && F('label', 'off', 'sm:col-span-2')}
       {F('name', 'name', 'sm:col-span-2')}
       {F('street', 'street-address')}
       {F('floor', 'address-line2')}
@@ -195,7 +218,7 @@ function Addresses({ customer, a, p }) {
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
         {list.map((x) => editing === x.id ? (
-          <div key={x.id} className="md:col-span-2"><AddressForm initial={x} a={a} p={p} onSave={save} onCancel={() => setEditing(null)} /></div>
+          <div key={x.id} className="md:col-span-2"><AddressForm initial={x} a={a} p={p} onSave={save} onCancel={() => setEditing(null)} noLabel={customer.shopify} /></div>
         ) : (
           <div key={x.id} className={`ac-in relative rounded-3xl border p-6 ${x.isDefault ? 'border-gold/50 bg-gold/[0.06]' : 'border-cream/10 bg-roast/70'}`}>
             <div className="flex items-start justify-between gap-3">
@@ -220,7 +243,7 @@ function Addresses({ customer, a, p }) {
           </button>
         )}
       </div>
-      {editing === 'new' && <AddressForm initial={{ name: `${customer.firstName} ${customer.lastName}`.trim() }} a={a} p={p} onSave={save} onCancel={() => setEditing(null)} />}
+      {editing === 'new' && <AddressForm initial={{ name: `${customer.firstName} ${customer.lastName}`.trim() }} a={a} p={p} onSave={save} onCancel={() => setEditing(null)} noLabel={customer.shopify} />}
       {!list.length && editing !== 'new' && <Empty text={a.empty} />}
     </div>
   )
@@ -245,6 +268,7 @@ function Points({ customer, points, a, f }) {
   const worth = Math.floor(points / r.rewardPoints) * r.rewardValue
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
+      {customer.shopify && <p className="ac-in rounded-2xl border border-gold/30 bg-gold/[0.07] px-5 py-4 text-sm text-gold lg:col-span-2">{(shopText[f.code] || shopText.en).pointsSoon}</p>}
       <div className="ac-in flex flex-col items-center rounded-3xl border border-cream/10 bg-roast/70 p-8 text-center">
         <div className="relative grid place-items-center">
           <PointsRing value={points % r.rewardPoints} max={r.rewardPoints} />
@@ -300,7 +324,7 @@ function Overview({ customer, points, tx, f, products }) {
         </div>
         {last ? (
           <div className="mt-5 flex flex-wrap items-center gap-5">
-            <div className="flex -space-x-3" aria-hidden="true">{last.items.map((i) => { const p = products.find((x) => x.id === i.productId); return p && <span key={i.productId} className="w-12"><Bag product={p} /></span> })}</div>
+            <div className="flex -space-x-3" aria-hidden="true">{last.items.map((i, k) => <span key={k} className="w-12"><ItemArt p={productOf(products, i)} i={i} /></span>)}</div>
             <div className="flex-1">
               <p className="font-display text-2xl text-cream">#{last.id}</p>
               <p className="text-sm text-muted">{f.date(last.date)} · {f.money(orderTotals(last).total)}</p>
@@ -335,7 +359,7 @@ export default function AccountPage({ onAdd }) {
   const tx = accountText[t.code]
   const { customer, ready, points, logout, openPanel } = useAuth()
   const f = useFormat(t.code)
-  const products = localizedProducts(t)
+  const products = useProducts()
   const root = useRef(null)
 
   useEffect(() => {

@@ -5,14 +5,20 @@ import App from './App.jsx'
 import { BrowserRouter } from 'react-router'
 import { LangProvider } from './i18n'
 import { AuthProvider } from './account/AuthContext'
+import { CatalogProvider } from './shopify/catalog'
+import { CartProvider } from './shopify/cart'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <LangProvider>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <CatalogProvider>
+          <CartProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </CartProvider>
+        </CatalogProvider>
       </LangProvider>
     </BrowserRouter>
   </StrictMode>,

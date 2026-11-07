@@ -3,12 +3,14 @@ import { createPortal } from 'react-dom'
 import { Link, useParams } from 'react-router'
 import { gsap, useGSAP, ScrollTrigger, FULL } from '../lib/gsap'
 import { useLang } from '../i18n'
-import { axes, localizedProducts, productOptions, priceFor } from '../data/content'
+import { axes, productOptions, priceFor } from '../data/content'
+import { useProducts } from '../shopify/catalog'
 import { Bag, Bean, Plus, Leaf, Truck, Flame, ArrowRight } from './Art'
 import { Eyebrow, Button, PhotoBg, flyToCart } from './ui'
 import { Radar, points } from './Quiz'
 import Airscape, { AirscapeBadge } from './Airscape'
 import { airscapeText } from '../data/airscape'
+import { shopText } from '../shopify/text'
 import CartButton from './CartButton'
 import Carousel from './Carousel'
 
@@ -140,8 +142,17 @@ function Buy({ product, onAdd, t }) {
   const priceEl = useRef(null)
   const shown = useRef(null)
 
+  // Shopify products: options, prices and stock come from their variants.
+  const sp = product.shopify
+  const [sel, setSel] = useState(() => {
+    const first = sp?.variants.find((v) => v.available) || sp?.variants[0]
+    return first ? { ...first.options } : {}
+  })
+  const variant = sp && (sp.variants.find((v) => sp.options.every((o) => v.options[o.name] === sel[o.name])) || null)
+  const soldOut = !!sp && !variant?.available
+
   const sizeObj = opts.sizes.find((s) => s.id === size)
-  const unit = priceFor(product, sizeObj.mult, roast)
+  const unit = sp ? (variant?.price ?? product.price) : priceFor(product, sizeObj.mult, roast)
   const total = unit * qty
 
   // Green coffee only comes as whole beans.
@@ -159,7 +170,8 @@ function Buy({ product, onAdd, t }) {
   }, [total])
 
   const add = (e) => {
-    onAdd(product, { size, roast, grind, qty })
+    if (sp) onAdd(product, { variantId: variant?.id, qty, price: unit, variantTitle: summary })
+    else onAdd(product, { size, roast, grind, qty, price: unit, variantTitle: summary })
     flyToCart(e.currentTarget)
     setAdded(true)
     setTimeout(() => setAdded(false), 2200)
@@ -175,7 +187,9 @@ function Buy({ product, onAdd, t }) {
     })
   }, { scope: ref })
 
-  const summary = [sizeObj.label, d.roasts[roast][0], d.grinds[grind]].join(' · ')
+  const summary = sp
+    ? (variant && !/default title/i.test(variant.title) ? variant.title : '')
+    : [sizeObj.label, d.roasts[roast][0], d.grinds[grind]].join(' · ')
 
   return (
     <div ref={ref} className="pdp-buy">
@@ -206,6 +220,24 @@ function Buy({ product, onAdd, t }) {
       </ul>
       <p className="pdp-in mt-6 max-w-lg leading-relaxed text-cream/70">{product.pitch}</p>
 
+      {sp ? (
+        <div className="pdp-in mt-10 space-y-7">
+          {sp.options.map((o, i) => (
+            <OptionGroup key={o.name} name={`opt-${i}`} legend={o.name} value={sel[o.name]} onChange={(v) => setSel((s) => ({ ...s, [o.name]: v }))}
+              cols={o.values.length > 3 ? 'grid-cols-2 sm:grid-cols-3' : o.values.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}
+              options={o.values.map((v) => {
+                const match = sp.variants.filter((x) => x.options[o.name] === v)
+                return {
+                  id: v,
+                  label: v,
+                  // With a single option, each choice shows its own price.
+                  hint: sp.options.length === 1 && match[0] ? euro(match[0].price) : undefined,
+                  disabled: !match.some((x) => x.available),
+                }
+              })} />
+          ))}
+        </div>
+      ) : (
       <div className="pdp-in mt-10 space-y-7">
         <OptionGroup name="size" legend={d.size} value={size} onChange={setSize}
           options={opts.sizes.map((s) => ({ id: s.id, label: s.label, hint: euro(priceFor(product, s.mult, roast)) }))} />
@@ -219,6 +251,7 @@ function Buy({ product, onAdd, t }) {
           {roast === 'green' && <p className="mt-2 text-xs text-gold" role="status">{d.greenNote}</p>}
         </div>
       </div>
+      )}
 
       <div className="pdp-in mt-9 flex flex-wrap items-end gap-4">
         <div>
@@ -229,11 +262,11 @@ function Buy({ product, onAdd, t }) {
             <button onClick={() => setQty((q) => Math.min(20, q + 1))} aria-label={d.increase} className="grid size-12 place-items-center rounded-full text-cream transition-colors hover:text-gold"><Plus className="size-4" /></button>
           </div>
         </div>
-        <CartButton onAdd={add} addedLabel={d.added} className="pdp-add flex-1 !min-h-14 text-base">
-          {d.add} · {euro(total)}
+        <CartButton onAdd={add} addedLabel={d.added} disabled={soldOut} className="pdp-add flex-1 !min-h-14 text-base disabled:cursor-not-allowed disabled:opacity-50">
+          {soldOut ? (shopText[t.code] || shopText.en).soldOut : <>{d.add} · {euro(total)}</>}
         </CartButton>
       </div>
-      <p className="pdp-in mt-3 text-xs text-muted">{summary}</p>
+      {summary && <p className="pdp-in mt-3 text-xs text-muted">{summary}</p>}
 
       <ul className="pdp-in mt-8 grid grid-cols-3 gap-3 border-t border-cream/10 pt-6 text-xs text-cream/70">
         {[Flame, Truck, Leaf].map((I, i) => (
@@ -274,7 +307,7 @@ function Story({ product, d }) {
     })
   }, { scope: ref })
 
-  const photo = storyPhoto[product.category]
+  const photo = storyPhoto[product.category] || 'sacks'
   return (
     <section ref={ref} className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 md:px-8 md:py-32 lg:grid-cols-2 lg:gap-20">
       <div>
@@ -287,13 +320,15 @@ function Story({ product, d }) {
       <div className="ps-photo relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-roast">
         <img src={`/img/${photo}-900.webp`} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-espresso/70 to-transparent" />
-        <div className="absolute bottom-6 left-6 right-6 flex items-center gap-4 rounded-2xl border border-cream/15 bg-roast/70 p-4 backdrop-blur-md">
-          <span className="w-10 shrink-0"><Bag product={product} /></span>
-          <span>
-            <span className="block text-xs uppercase tracking-[0.2em] text-muted">{d.facts.origin}</span>
-            <span className="font-display text-xl text-cream">{product.facts.origin}</span>
-          </span>
-        </div>
+        {product.facts.origin && (
+          <div className="absolute bottom-6 left-6 right-6 flex items-center gap-4 rounded-2xl border border-cream/15 bg-roast/70 p-4 backdrop-blur-md">
+            <span className="w-10 shrink-0"><Bag product={product} /></span>
+            <span>
+              <span className="block text-xs uppercase tracking-[0.2em] text-muted">{d.facts.origin}</span>
+              <span className="font-display text-xl text-cream">{product.facts.origin}</span>
+            </span>
+          </div>
+        )}
       </div>
     </section>
   )
@@ -387,7 +422,8 @@ export default function ProductPage({ onAdd }) {
   const { id } = useParams()
   const { t } = useLang()
   const d = t.pdp
-  const product = localizedProducts(t).find((p) => p.id === id)
+  const products = useProducts()
+  const product = products.find((p) => p.id === id || p.handle === id)
   const [view, setView] = useState('bag')
   const root = useRef(null)
 
@@ -429,7 +465,7 @@ export default function ProductPage({ onAdd }) {
         </div>
       </section>
       <Story product={product} d={d} />
-      <Specs product={product} t={t} />
+      {product.profile && <Specs product={product} t={t} />}
       {product.airscape && <Airscape text={airscapeText[t.code] || airscapeText.en} />}
       <section className="py-24 md:py-32">
         <div className="mx-auto mb-12 max-w-7xl px-5 md:px-8">

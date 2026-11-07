@@ -65,7 +65,14 @@ The account icon in the menu opens a side panel with **Log in** and **Sign up** 
 
 ## Shopify
 
-Cart lines already store the chosen variant (`{ id, size, roast, grind, qty }` in `src/App.jsx`), ready to map onto a Storefront API cart. Customer accounts: see above and `src/config.js`.
+The site is connected to the store `8hhepn-pp.myshopify.com` through the **Headless** sales channel (storefront for `fuertecoffee.vercel.app`). All of it is in `src/shopify/`:
+
+- `config.js`: store domain, public Storefront API token and Customer Account API client id. These are public by design; the private token and any client secret must never be added. `VITE_SHOPIFY_DOMAIN`, `VITE_SHOPIFY_STOREFRONT_TOKEN` and `VITE_SHOPIFY_CUSTOMER_CLIENT_ID` override them, and `VITE_SHOPIFY=off` runs the site on demo data only.
+- `catalog.jsx`: loads the published products (Storefront API, in the page language). A product is matched to a designed coffee in `src/data/content.js` by handle, or by the coffee's name in its handle/title (e.g. "Κολομβία", "Ethiopia", "Red … blend"), and keeps the designed name, taste profile, story, pack art and quiz data, with prices, options, stock and photos from Shopify. Other products are shown with their own title, photo and description, and are filed under a shop filter by their **tags** or **product type** (e.g. `Μονής προέλευσης`, `Ελληνικός`, `Blend`, `Microlot`, `Φίλτρου`, `Decaf`, `Μηχανές καφέ`, `Μύλοι άλεσης`, `Καθαριστικά`, `Ανταλλακτικά`, `Ζυγαριές`, `Αξεσουάρ μπαρίστα`, `Τσάι`, `Κακάο`, `Στιγμιαίος`; English names work too). If the store is unreachable or has no products, the demo catalogue is shown.
+- `cart.jsx` + `src/components/CartPanel.jsx`: a Storefront API cart (id kept in the browser); "Checkout" opens Shopify's checkout. The product page builds its options from the product's Shopify variants.
+- `customer.js`: customer accounts through the Customer Account API as a public PKCE client, following Shopify's Hydrogen flow. Login and sign-up happen on Shopify's page (email + one-time code) and return to `/account/callback`; the account page shows real orders (with a link to Shopify's order status page) and edits addresses. Login only works on an https address listed in the Headless channel's Customer Account API settings, so on `localhost` the demo account is used. Points need a loyalty app and show "coming soon" for Shopify customers.
+
+`vercel.json` rewrites page routes (like `/account/callback`) to the app.
 
 ## Photos
 

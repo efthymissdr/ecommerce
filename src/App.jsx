@@ -10,6 +10,8 @@ import ScrollProgress from './components/ScrollProgress'
 import AuthPanel from './components/AuthPanel'
 import ToTop from './components/ToTop'
 import { useAuth } from './account/AuthContext'
+import { useCart } from './shopify/cart'
+import CartPanel from './components/CartPanel'
 import Hero from './components/Hero'
 import Marquee from './components/Marquee'
 import Collections from './components/Collections'
@@ -22,11 +24,12 @@ const ProductPage = lazy(() => import('./components/ProductPage'))
 const WholesalePage = lazy(() => import('./components/WholesalePage'))
 const AccountPage = lazy(() => import('./components/AccountPage'))
 const LegalPage = lazy(() => import('./components/LegalPage'))
+const AccountCallback = lazy(() => import('./components/AccountCallback'))
 
 export default function App() {
   const { lang, setLang, t } = useLang()
   const [ready, setReady] = useState(false)
-  const [cart, setCart] = useState([])
+  const cart = useCart()
   const [bump, setBump] = useState(0)
   // Lives here so quiz progress survives a language switch.
   const [quiz, setQuiz] = useState({ step: -1, answers: [], pick: null })
@@ -64,19 +67,20 @@ export default function App() {
     return () => { ro.disconnect(); clearTimeout(timer) }
   }, [])
 
-  // Freeze page scrolling while the login panel is open.
+  // Freeze page scrolling while the login or cart panel is open.
+  const overlay = !!panel || cart.open
   useEffect(() => {
-    if (panel) { lenis.current?.stop(); document.documentElement.style.overflow = 'hidden' }
+    if (overlay) { lenis.current?.stop(); document.documentElement.style.overflow = 'hidden' }
     else { lenis.current?.start(); document.documentElement.style.overflow = '' }
-  }, [panel])
+  }, [overlay])
 
-  // Cart lines carry the chosen variant; quick-adds from the grid use the defaults.
-  // TODO(shopify): replace with a Storefront API cart.
+  // Add to the cart (Shopify cart when the store is connected, demo cart otherwise).
+  // opts: { variantId, qty, price, variantTitle } from the product page; quick adds use the defaults.
   const add = (p, opts = {}) => {
-    setCart((c) => [...c, { id: p.id, qty: 1, ...opts }])
+    cart.addItem({ product: p, variantId: opts.variantId, qty: opts.qty || 1, price: opts.price, variantTitle: opts.variantTitle })
     setBump((b) => b + 1)
   }
-  const cartCount = cart.reduce((n, line) => n + line.qty, 0)
+  const cartCount = cart.count
 
   // On navigation: jump to the top, or to the #section in the URL once the
   // new page has mounted, then re-measure scroll-driven animations.
@@ -135,6 +139,7 @@ export default function App() {
       </div>
       <ScrollProgress />
       <AuthPanel />
+      <CartPanel />
       <ToTop onClick={toTop} />
       <Nav cartCount={cartCount} bump={bump} onLang={switchLang} />
       <div key={lang} className="overflow-x-clip">
@@ -153,6 +158,7 @@ export default function App() {
               </main>
             }
           />
+          <Route path="/account/callback" element={<Suspense fallback={<div className="min-h-svh" />}><AccountCallback /></Suspense>} />
           <Route path="/account/:section?" element={<Suspense fallback={<div className="min-h-svh" />}><AccountPage onAdd={add} /></Suspense>} />
           <Route path="/wholesale" element={<Suspense fallback={<div className="min-h-svh" />}><WholesalePage /></Suspense>} />
           <Route path="/legal/:slug" element={<Suspense fallback={<div className="min-h-svh" />}><LegalPage /></Suspense>} />
