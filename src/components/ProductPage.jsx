@@ -28,6 +28,13 @@ const storyPhoto = { single: 'sacks', blend: 'cups' }
 
 const euro = (v) => `€${v.toFixed(2)}`
 
+// Shopify CDN image at a given width.
+const cdn = (url, w) => `${url}${url.includes('?') ? '&' : '?'}width=${w}`
+
+// The product's own photos from Shopify. When the pack art already is the
+// first Shopify photo (products without a designed pack), it is not repeated.
+const shopifyPhotos = (product) => (product.shopify?.images || []).slice(product.photo ? 0 : 1, 6)
+
 /* ---------- option group built on native radios (free keyboard support) ---------- */
 
 function OptionGroup({ name, legend, options, value, onChange, cols = 'grid-cols-3' }) {
@@ -91,7 +98,11 @@ function Stage({ product, view, setView, labels }) {
     gsap.fromTo('.st-view', { autoAlpha: 0, scale: 0.94 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: 'expo.out' })
   }, { scope: ref, dependencies: [view, product.kicker] })
 
-  const views = [['bag', null], ['beans', '/img/beans-960.webp'], ['cup', '/img/cups-900.webp']]
+  // Pack first, then the product's Shopify photos; the generic beans/cup views only while it has none.
+  const photos = shopifyPhotos(product)
+  const views = photos.length
+    ? [['bag', null], ...photos.map((url, i) => [`photo-${i}`, cdn(url, 1000), cdn(url, 200), `${product.name} ${i + 1}`])]
+    : [['bag', null], ['beans', '/img/beans-960.webp'], ['cup', '/img/cups-900.webp']]
 
   return (
     <div ref={ref} className="pdp-stage lg:sticky lg:top-28">
@@ -111,8 +122,8 @@ function Stage({ product, view, setView, labels }) {
           <img src={views.find(([v]) => v === view)[1]} alt="" className="st-view absolute inset-0 size-full object-cover" />
         )}
       </div>
-      <div className="mt-4 flex gap-3" role="group" aria-label={labels.viewsLabel}>
-        {views.map(([v, src]) => (
+      <div className="mt-4 flex flex-wrap gap-3" role="group" aria-label={labels.viewsLabel}>
+        {views.map(([v, src, thumb, alt]) => (
           <button
             key={v}
             onClick={() => setView(v)}
@@ -120,9 +131,9 @@ function Stage({ product, view, setView, labels }) {
             className={`group relative h-20 w-20 overflow-hidden rounded-2xl border transition-all duration-300 ${view === v ? 'border-gold' : 'border-cream/10 hover:border-gold/50'}`}
           >
             {src
-              ? <img src={src} alt="" className="size-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              ? <img src={thumb || src} alt="" loading="lazy" className="size-full object-cover transition-transform duration-500 group-hover:scale-110" />
               : <span className="grid size-full place-items-center bg-roast"><span className="w-9"><Bag product={product} /></span></span>}
-            <span className="sr-only">{labels.views[v]}</span>
+            <span className="sr-only">{alt || labels.views[v]}</span>
           </button>
         ))}
       </div>
@@ -477,7 +488,11 @@ export default function ProductPage({ onAdd }) {
           </h2>
         </div>
         <Carousel
-          slides={slideIds.map(([sid, src]) => ({ id: sid, src, caption: d.slides[sid] }))}
+          slides={[
+            // The product's own Shopify photos first, then the FUERTE photos.
+            ...shopifyPhotos(product).map((url, i) => ({ id: `photo-${i}`, src: cdn(url, 1600), caption: product.name })),
+            ...slideIds.map(([sid, src]) => ({ id: sid, src, caption: d.slides[sid] })),
+          ]}
           labels={{ title: `${d.galleryTitle} ${d.galleryTitleEm}`, prev: d.prev, next: d.next, goTo: d.goTo, pause: d.pause, play: d.play }}
         />
       </section>
