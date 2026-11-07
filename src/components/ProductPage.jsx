@@ -5,10 +5,11 @@ import { gsap, useGSAP, ScrollTrigger, FULL } from '../lib/gsap'
 import { useLang } from '../i18n'
 import { axes, localizedProducts, productOptions, priceFor } from '../data/content'
 import { Bag, Bean, Plus, Leaf, Truck, Flame, ArrowRight } from './Art'
-import { Eyebrow, Magnetic, Button, PhotoBg, flyToCart } from './ui'
+import { Eyebrow, Button, PhotoBg, flyToCart } from './ui'
 import { Radar, points } from './Quiz'
 import Airscape, { AirscapeBadge } from './Airscape'
 import { airscapeText } from '../data/airscape'
+import CartButton from './CartButton'
 import Carousel from './Carousel'
 
 const slideIds = [
@@ -228,11 +229,9 @@ function Buy({ product, onAdd, t }) {
             <button onClick={() => setQty((q) => Math.min(20, q + 1))} aria-label={d.increase} className="grid size-12 place-items-center rounded-full text-cream transition-colors hover:text-gold"><Plus className="size-4" /></button>
           </div>
         </div>
-        <Magnetic strength={0.2} className="flex-1">
-          <Button as="button" onClick={add} className="pdp-add w-full justify-center !min-h-14 text-base">
-            {added ? d.added : <>{d.add} · {euro(total)}</>}
-          </Button>
-        </Magnetic>
+        <CartButton onAdd={add} addedLabel={d.added} className="pdp-add flex-1 !min-h-14 text-base">
+          {d.add} · {euro(total)}
+        </CartButton>
       </div>
       <p className="pdp-in mt-3 text-xs text-muted">{summary}</p>
 

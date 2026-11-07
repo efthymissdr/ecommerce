@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { Link } from 'react-router'
 import { gsap, useGSAP, FULL } from '../lib/gsap'
 import { useLang } from '../i18n'
 import { axes, localizedProducts } from '../data/content'
 import { questions, recommend } from '../data/quiz'
 import { Bag, Bean, ArrowRight } from './Art'
+import CartButton from './CartButton'
 import { Eyebrow, Magnetic, Button, SplitWords, flyToCart, PhotoBg } from './ui'
 
 /* ---------- option icons ---------- */
@@ -108,7 +109,6 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
   const q = t.quiz
   const root = useRef(null)
   const busy = useRef(false)
-  const [added, setAdded] = useState(false)
   const products = localizedProducts(t)
   const n = questions.length
   const { step, answers, pick } = quiz
@@ -148,8 +148,6 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
   const addToCart = (e) => {
     onAdd(shown.product)
     flyToCart(e.currentTarget)
-    setAdded(true)
-    setTimeout(() => setAdded(false), 2200)
   }
 
   // Section entrance on scroll.
@@ -357,11 +355,9 @@ export default function Quiz({ quiz, setQuiz, onAdd }) {
                   </ul>
                 </div>
                 <div className="qz-res-in mt-8 flex flex-wrap items-center gap-3">
-                  <Magnetic>
-                    <Button as="button" onClick={addToCart}>
-                      {added ? q.added : `${q.add} · €${shown.product.price.toFixed(2)}`}
-                    </Button>
-                  </Magnetic>
+                  <CartButton onAdd={addToCart} addedLabel={q.added}>
+                    {q.add} · €{shown.product.price.toFixed(2)}
+                  </CartButton>
                   <Button as={Link} to={`/products/${shown.product.id}`} variant="ghost">
                     {t.pdp.view} <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </Button>
