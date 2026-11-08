@@ -299,9 +299,18 @@ function Buy({ product, onAdd, t }) {
 // a list of "Story slide" entries with an image and a text), or, until it has
 // some, the built-in story paragraphs with FUERTE photos.
 function storySlides(product) {
-  if (product.storySlides?.length) return product.storySlides
   const first = storyPhoto[product.category] || 'sacks'
   const photos = [`/img/${first}-900.webp`, product.category === 'single' ? '/img/beans-1200.webp' : '/img/barista-1200.webp']
+  if (product.storySlides?.length) {
+    // A slide without a photo takes the product's Shopify photo (or a FUERTE one);
+    // a slide without text takes the matching built-in story paragraph.
+    const own = product.shopify?.images || []
+    return product.storySlides.map((s, i) => ({
+      ...s,
+      image: s.image || (own[i] ? cdn(own[i], 1200) : photos[i % photos.length]),
+      text: s.text || (s.title ? '' : product.story.body[i] || ''),
+    }))
+  }
   return product.story.body.map((text, i) => ({ image: photos[i % photos.length], text }))
 }
 

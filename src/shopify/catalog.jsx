@@ -64,16 +64,37 @@ function tasteOf(s) {
   return out
 }
 
-// Story slides from the product's custom.story_slides metafield: a list of
-// "Story slide" metaobjects with fields image (file), text (multi-line) and an
-// optional title. Slides without an image or text are skipped.
+// Story slides from the product's custom.story_slides metafield. Accepted:
+// a list (or one) of "Story slide" metaobjects with an image field, a text
+// field and an optional title, or a list (or one) of image files. A slide needs
+// a photo or a text; the product page fills in whichever is missing.
+const sized = (img) => ({ image: `${img.url}${img.url.includes('?') ? '&' : '?'}width=1200`, alt: img.altText || '' })
+const TEXT_TYPES = ['multi_line_text_field', 'single_line_text_field', 'rich_text_field']
+
+function slideOf(node) {
+  if (!node) return null
+  if (node.image) return { ...sized(node.image), text: '', title: '' }
+  if (!node.fields) return null
+  const img = (node.fields.find((f) => ['image', 'photo'].includes(f.key)) || node.fields.find((f) => f.reference?.image))?.reference?.image
+  const title = node.fields.find((f) => f.key === 'title')?.value?.trim() || ''
+  const textField = node.fields.find((f) => ['text', 'description'].includes(f.key)) || node.fields.find((f) => f.key !== 'title' && TEXT_TYPES.includes(f.type))
+  let text = textField?.value?.trim() || ''
+  // Rich text arrives as JSON: keep its plain text.
+  if (textField?.type === 'rich_text_field') text = [...text.matchAll(/"value":"((?:[^"\\]|\\.)*)"/g)].map((m) => JSON.parse(`"${m[1]}"`)).join('\n')
+  if (!img && !text) return null
+  return { ...(img ? sized(img) : { image: null, alt: '' }), text, title }
+}
+
 function storyOf(s) {
-  return (s.story?.references?.nodes || []).map((node) => {
-    const f = Object.fromEntries((node?.fields || []).map((x) => [x.key, x]))
-    const img = (f.image || f.photo)?.reference?.image
-    const text = (f.text || f.description)?.value?.trim()
-    return img && text ? { image: `${img.url}${img.url.includes('?') ? '&' : '?'}width=1200`, alt: img.altText || '', text, title: f.title?.value?.trim() || '' } : null
-  }).filter(Boolean)
+  for (const m of s.story || []) {
+    if (!m) continue
+    const nodes = m.references?.nodes || (m.reference ? [m.reference] : [])
+    const slides = nodes.map(slideOf).filter(Boolean)
+    if (slides.length) return slides
+    // The field exists but nothing usable came back: say why in the console.
+    console.warn(`[FUERTE] Story field custom.${m.key} on "${s.handle}" (type ${m.type}) has no readable slides. If it holds Story slide entries, turn on "Storefront API access" on the Story slide metaobject definition.`, m.value)
+  }
+  return []
 }
 
 // What every product carries from Shopify, matched or not.

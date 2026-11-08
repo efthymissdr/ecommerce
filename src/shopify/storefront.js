@@ -20,6 +20,11 @@ export function checkUserErrors(payload) {
   return payload
 }
 
+// A story slide can be a "Story slide" metaobject (image, text, title) or just an image file.
+const SLIDE = `
+  ... on MediaImage { image { url altText } }
+  ... on Metaobject { fields { key type value reference { ... on MediaImage { image { url altText } } } } }`
+
 const PRODUCTS = `
 query Products($lang: LanguageCode, $country: CountryCode, $cursor: String) @inContext(language: $lang, country: $country) {
   products(first: 100, after: $cursor) {
@@ -34,10 +39,13 @@ query Products($lang: LanguageCode, $country: CountryCode, $cursor: String) @inC
         { namespace: "custom", key: "intensity" }, { namespace: "custom", key: "acidity" }, { namespace: "custom", key: "sweetness" },
         { namespace: "custom", key: "body" }, { namespace: "custom", key: "fruity" }, { namespace: "custom", key: "chocolatey" }
       ]) { key value }
-      story: metafield(namespace: "custom", key: "story_slides") {
-        references(first: 10) {
-          nodes { ... on Metaobject { fields { key value reference { ... on MediaImage { image { url altText } } } } } }
-        }
+      story: metafields(identifiers: [
+        { namespace: "custom", key: "story_slides" }, { namespace: "custom", key: "story_slide" }, { namespace: "custom", key: "story" },
+        { namespace: "custom", key: "story_photos" }, { namespace: "custom", key: "story_images" }
+      ]) {
+        key type value
+        reference { ${SLIDE} }
+        references(first: 10) { nodes { ${SLIDE} } }
       }
       variants(first: 100) {
         nodes { id title availableForSale price { amount currencyCode } selectedOptions { name value } image { url } }
