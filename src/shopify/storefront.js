@@ -34,6 +34,11 @@ query Products($lang: LanguageCode, $country: CountryCode, $cursor: String) @inC
         { namespace: "custom", key: "intensity" }, { namespace: "custom", key: "acidity" }, { namespace: "custom", key: "sweetness" },
         { namespace: "custom", key: "body" }, { namespace: "custom", key: "fruity" }, { namespace: "custom", key: "chocolatey" }
       ]) { key value }
+      story: metafield(namespace: "custom", key: "story_slides") {
+        references(first: 10) {
+          nodes { ... on Metaobject { fields { key value reference { ... on MediaImage { image { url altText } } } } } }
+        }
+      }
       variants(first: 100) {
         nodes { id title availableForSale price { amount currencyCode } selectedOptions { name value } image { url } }
       }
