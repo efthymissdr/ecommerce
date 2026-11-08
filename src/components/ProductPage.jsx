@@ -12,16 +12,7 @@ import Airscape, { AirscapeBadge } from './Airscape'
 import { airscapeText } from '../data/airscape'
 import { shopText } from '../shopify/text'
 import CartButton from './CartButton'
-import Carousel from './Carousel'
 
-const slideIds = [
-  ['beans', '/img/beans-1200.webp'],
-  ['cups', '/img/cups-900.webp'],
-  ['sacks', '/img/sacks-900.webp'],
-  ['barista', '/img/barista-1200.webp'],
-  ['cafe', '/img/cafe-1400.webp'],
-  ['breakfast', '/img/breakfast-900.webp'],
-]
 
 // Photo used beside each product's story.
 const storyPhoto = { single: 'sacks', blend: 'cups' }
@@ -304,8 +295,24 @@ function Buy({ product, onAdd, t }) {
 
 /* ---------- story ---------- */
 
+// Slides for the story: the product's own from Shopify (metafield custom.story_slides,
+// a list of "Story slide" entries with an image and a text), or, until it has
+// some, the built-in story paragraphs with FUERTE photos.
+function storySlides(product) {
+  if (product.storySlides?.length) return product.storySlides
+  const first = storyPhoto[product.category] || 'sacks'
+  const photos = [`/img/${first}-900.webp`, product.category === 'single' ? '/img/beans-1200.webp' : '/img/barista-1200.webp']
+  return product.story.body.map((text, i) => ({ image: photos[i % photos.length], text }))
+}
+
 function Story({ product, d }) {
   const ref = useRef(null)
+  const slides = storySlides(product)
+  const n = slides.length
+  const [index, setIndex] = useState(0)
+  const go = (i) => setIndex((i + n) % n)
+  const drag = useRef(null)
+
   useGSAP(() => {
     const mm = gsap.matchMedia()
     mm.add(FULL, () => {
@@ -314,22 +321,62 @@ function Story({ product, d }) {
         clipPath: 'inset(0% 0% 0% 0% round 2.5rem)', ease: 'none',
         scrollTrigger: { trigger: '.ps-photo', start: 'top 90%', end: 'top 35%', scrub: true },
       })
-      gsap.fromTo('.ps-photo img', { yPercent: -8, scale: 1.2 }, { yPercent: 8, scale: 1.2, ease: 'none', scrollTrigger: { trigger: '.ps-photo', start: 'top bottom', end: 'bottom top', scrub: true } })
+      gsap.fromTo('.ps-par', { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: '.ps-photo', start: 'top bottom', end: 'bottom top', scrub: true } })
     })
   }, { scope: ref })
 
-  const photo = storyPhoto[product.category] || 'sacks'
+  // Changing slide: the new photo settles in from a slight zoom, the text rises in.
+  const first = useRef(true)
+  useGSAP(() => {
+    if (first.current) { first.current = false; return }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.fromTo(`.ps-slide-${index}`, { scale: 1.08 }, { scale: 1, duration: 1.2, ease: 'expo.out' })
+    gsap.fromTo('.ps-text', { y: 18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.6, ease: 'power3.out' })
+  }, { scope: ref, dependencies: [index] })
+
+  // Swipe on the photo (phones and trackpads).
+  const onDown = (e) => { drag.current = e.clientX }
+  const onUp = (e) => {
+    if (drag.current == null) return
+    const dx = e.clientX - drag.current
+    drag.current = null
+    if (Math.abs(dx) > 40) go(index + (dx < 0 ? 1 : -1))
+  }
+
+  const slide = slides[index]
+  const btn = 'grid size-12 place-items-center rounded-full border border-cream/15 text-cream transition-colors hover:border-gold hover:text-gold'
   return (
-    <section ref={ref} className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 md:px-8 md:py-32 lg:grid-cols-2 lg:gap-20">
+    <section ref={ref} aria-roledescription="carousel" aria-label={d.storyEyebrow} className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 md:px-8 md:py-32 lg:grid-cols-2 lg:gap-20">
       <div>
         <Eyebrow className="ps-in">{d.storyEyebrow}</Eyebrow>
         <h2 className="ps-in mt-6 font-display text-[clamp(2.6rem,5vw,4.5rem)] leading-[0.95] text-cream">{product.story.title}</h2>
-        {product.story.body.map((p, i) => (
-          <p key={i} className={`ps-in mt-6 text-lg leading-relaxed ${i === 0 ? 'text-cream/85' : 'text-cream/65'}`}>{p}</p>
-        ))}
+        <div className="ps-in mt-6 min-h-[9rem]" aria-live="polite">
+          <div className="ps-text">
+            {slide.title && <h3 className="font-display text-2xl text-gold">{slide.title}</h3>}
+            {slide.text.split(/\n+/).map((p, i) => <p key={i} className={`text-lg leading-relaxed text-cream/80 ${slide.title || i ? 'mt-3' : ''}`}>{p}</p>)}
+          </div>
+        </div>
+        {n > 1 && (
+          <div className="ps-in mt-10 flex items-center gap-4">
+            <button type="button" onClick={() => go(index - 1)} aria-label={d.prev} className={btn}><ArrowRight className="size-4 rotate-180" /></button>
+            <button type="button" onClick={() => go(index + 1)} aria-label={d.next} className={btn}><ArrowRight className="size-4" /></button>
+            <span className="ml-2 font-display text-xl tabular-nums text-cream">{String(index + 1).padStart(2, '0')} <span className="text-muted">/ {String(n).padStart(2, '0')}</span></span>
+            <span className="ml-auto flex gap-2">
+              {slides.map((_, i) => (
+                <button key={i} type="button" onClick={() => go(i)} aria-label={d.goTo(i + 1)} aria-current={i === index}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${i === index ? 'w-8 bg-gold' : 'w-3 bg-cream/25 hover:bg-cream/50'}`} />
+              ))}
+            </span>
+          </div>
+        )}
       </div>
-      <div className="ps-photo relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-roast">
-        <img src={`/img/${photo}-900.webp`} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
+      <div className="ps-photo relative aspect-[4/5] touch-pan-y select-none overflow-hidden rounded-[2.5rem] bg-roast" onPointerDown={onDown} onPointerUp={onUp} onPointerCancel={() => { drag.current = null }}>
+        <div className="ps-par absolute -inset-y-[8%] inset-x-0">
+          {slides.map((s, i) => (
+            <img key={i} src={s.image} alt={s.alt || ''} loading={i ? 'lazy' : 'eager'} draggable="false"
+              className={`ps-slide-${i} absolute inset-0 size-full object-cover transition-opacity duration-700 ${i === index ? 'opacity-100' : 'opacity-0'}`} />
+          ))}
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-espresso/70 to-transparent" />
         {product.facts.origin && (
           <div className="absolute bottom-6 left-6 right-6 flex items-center gap-4 rounded-2xl border border-cream/15 bg-roast/70 p-4 backdrop-blur-md">
@@ -480,22 +527,6 @@ export default function ProductPage({ onAdd }) {
       <Story product={product} d={d} />
       {product.profile && <Specs product={product} t={t} />}
       {product.airscape && <Airscape text={airscapeText[t.code] || airscapeText.en} />}
-      <section className="py-24 md:py-32">
-        <div className="mx-auto mb-12 max-w-7xl px-5 md:px-8">
-          <Eyebrow>{d.galleryEyebrow}</Eyebrow>
-          <h2 className="mt-6 font-display text-[clamp(2.8rem,6vw,5rem)] leading-[0.92] text-cream">
-            {d.galleryTitle} <em className="text-gold">{d.galleryTitleEm}</em>
-          </h2>
-        </div>
-        <Carousel
-          slides={[
-            // The product's own Shopify photos first, then the FUERTE photos.
-            ...shopifyPhotos(product).map((url, i) => ({ id: `photo-${i}`, src: cdn(url, 1600), caption: product.name })),
-            ...slideIds.map(([sid, src]) => ({ id: sid, src, caption: d.slides[sid] })),
-          ]}
-          labels={{ title: `${d.galleryTitle} ${d.galleryTitleEm}`, prev: d.prev, next: d.next, goTo: d.goTo, pause: d.pause, play: d.play }}
-        />
-      </section>
     </main>
   )
 }

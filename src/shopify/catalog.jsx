@@ -64,6 +64,18 @@ function tasteOf(s) {
   return out
 }
 
+// Story slides from the product's custom.story_slides metafield: a list of
+// "Story slide" metaobjects with fields image (file), text (multi-line) and an
+// optional title. Slides without an image or text are skipped.
+function storyOf(s) {
+  return (s.story?.references?.nodes || []).map((node) => {
+    const f = Object.fromEntries((node?.fields || []).map((x) => [x.key, x]))
+    const img = (f.image || f.photo)?.reference?.image
+    const text = (f.text || f.description)?.value?.trim()
+    return img && text ? { image: `${img.url}${img.url.includes('?') ? '&' : '?'}width=1200`, alt: img.altText || '', text, title: f.title?.value?.trim() || '' } : null
+  }).filter(Boolean)
+}
+
 // What every product carries from Shopify, matched or not.
 function shopifyPart(s) {
   const variants = s.variants.nodes.map((v) => ({
@@ -72,7 +84,9 @@ function shopifyPart(s) {
   }))
   // "Title / Default Title" means the product has no real options.
   const options = s.options.filter((o) => !(o.values.length === 1 && /default title/i.test(o.values[0])))
+  const storySlides = storyOf(s)
   return {
+    ...(storySlides.length && { storySlides }),
     handle: s.handle,
     price: money(s.priceRange.minVariantPrice),
     available: s.availableForSale,
