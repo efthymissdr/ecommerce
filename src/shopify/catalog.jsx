@@ -85,16 +85,19 @@ function slideOf(node) {
   return { ...(img ? sized(img) : { image: null, alt: '' }), text, title }
 }
 
+// If several story fields are filled (e.g. an older single-entry field and a
+// newer list), the one with the most slides is used.
 function storyOf(s) {
+  let best = []
   for (const m of s.story || []) {
     if (!m) continue
     const nodes = m.references?.nodes || (m.reference ? [m.reference] : [])
     const slides = nodes.map(slideOf).filter(Boolean)
-    if (slides.length) return slides
+    if (slides.length > best.length) best = slides
     // The field exists but nothing usable came back: say why in the console.
-    console.warn(`[FUERTE] Story field custom.${m.key} on "${s.handle}" (type ${m.type}) has no readable slides. If it holds Story slide entries, turn on "Storefront API access" on the Story slide metaobject definition.`, m.value)
+    if (!slides.length) console.warn(`[FUERTE] Story field custom.${m.key} on "${s.handle}" (type ${m.type}) has no readable slides. If it holds Story slide entries, turn on "Storefront API access" on the Story slide metaobject definition.`, m.value)
   }
-  return []
+  return best
 }
 
 // What every product carries from Shopify, matched or not.
