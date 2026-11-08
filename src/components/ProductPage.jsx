@@ -386,16 +386,7 @@ function Story({ product, d }) {
               className={`ps-slide-${i} absolute inset-0 size-full object-cover transition-opacity duration-700 ${i === index ? 'opacity-100' : 'opacity-0'}`} />
           ))}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-espresso/70 to-transparent" />
-        {product.facts.origin && (
-          <div className="absolute bottom-6 left-6 right-6 flex items-center gap-4 rounded-2xl border border-cream/15 bg-roast/70 p-4 backdrop-blur-md">
-            <span className="w-10 shrink-0"><Bag product={product} /></span>
-            <span>
-              <span className="block text-xs uppercase tracking-[0.2em] text-muted">{d.facts.origin}</span>
-              <span className="font-display text-xl text-cream">{product.facts.origin}</span>
-            </span>
-          </div>
-        )}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-espresso/25 to-transparent" />
       </div>
     </section>
   )
